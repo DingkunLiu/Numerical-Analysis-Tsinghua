@@ -367,7 +367,6 @@ $$||A||\le \rho(A)+\epsilon$$
 \end{theorem}
 
 \begin{proof}
-证明:\\
 \begin{itemize}
 \item 设 $x \neq 0, Ax=\lambda x$，且$|\lambda| = \rho (A)$，则必存在向量$y\in R^n$，使得$xy^T\neq 0$，于是有：
 $$\rho(A)||xy^T|| = ||\lambda xy^T|| = ||Axy^T|| \le ||A||\cdot ||xy^T|| \Rightarrow \rho(A) \le ||A||$$
@@ -410,7 +409,7 @@ $$m||A||_\alpha \le ||A||_\beta \le M||A||_\alpha, \forall A \in R^{n\times n}$$
 \end{theorem}
 
 \begin{proof}
-证明： [反证法]\\
+ (反证法)\\
 若$det(A)=0$则$(I-B)x=0$有非零解，$i.e. \ \exists x_0 \neq 0 {\text{使}} Bx_0 = x_0 \Rightarrow \frac{||Bx_0||}{||x_0||}=1$，而$||B||=\max_{x\neq 0}\frac{||Bx||}{||x||}\ge \frac{||Bx_0||}{||x_o||}=1$，与已知矛盾。\\
 $\therefore \ (I-B)$是非异阵，同理可证$I+B$也为非异阵。\\
 记$D=(I-B)^{-1}$，则：
