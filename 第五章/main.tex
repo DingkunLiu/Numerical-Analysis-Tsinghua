@@ -1,0 +1,273 @@
+%!TEX program=xelatex
+\documentclass{article}
+\usepackage{ctex}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{graphicx}
+
+\newtheorem{definition}{定义}[section]
+\newtheorem{theorem}{定理}[section]
+\newtheorem{lemma}{引理}[section]
+\newtheorem{example}{例}[section]
+
+\makeatletter % `@' now normal "letter"
+\@addtoreset{equation}{section}
+\makeatother  % `@' is restored as "non-letter"
+\renewcommand\theequation{\oldstylenums{\thesection}%
+                   .\oldstylenums{\arabic{equation}}}
+
+\begin{document}
+\title{常微分方程初值问题的数值解法}
+\author{}
+\date{}
+\maketitle
+
+常微分方程的一般形式：
+\begin{equation}
+    \left\{
+        \begin{array}{lr}
+            \frac{dy}{dx} = f(x, y) \\
+            y(x_0) = y_0
+        \end{array}
+        \right. 
+\label{eq:diff}
+\end{equation}
+
+（定解条件）对于问题\ref{eq:diff}，如果函数$f(x,y)$关于y满足Lipschitz条件，即$\exists L$使得$|f(x,y)-f(x,\overline{y})|\le L|y-\overline{y}|$成立
+则由微分方程理论可知，初值问题\ref{eq:diff}的解存在且唯一。
+
+首先，将自变量x的区间进行离散，i.e. $x_n = x_{n-1} + h_n$，若等步长，则$x_n = x_0 + nh$
+
+\section{Euler方法}
+\subsection{向前Euler方法}
+用$y_n$表示$y(x_n)$的近似解，i.e. $y_n \approx y(x_n)$
+由\ref{eq:diff}显然有$\frac{dy}{dx}|_{x=x_n} = f(x_n, y(x_n)) = y^{'}(x_n)$，
+而$\frac{dy}{dx}|_{x=x_n} \approx \frac{y(x_{n+1}) - y(x_n)}{h}$，i.e. $\frac{y(x_{n+1}) - y(x_n)}{h} \approx f(x_n, y(x_n))$
+$\Rightarrow y(x_{n+1}) \approx y(x_n) + hf(x_n, y(x_n))$ ，若用$y_n\approx y(x_n), y_{n+1}\approx y(x_{n+1})$，则上式可写为：
+\begin{equation}
+    y_{n+1}=y_n+hf(x_n, y_n), n=0,1,2,\dots 
+    \label{eq:euler}
+\end{equation}
+向前Euler公式，显式方法。
+
+泰勒公式展开法推导
+\begin{equation*}
+    \begin{split}
+        &y(x_{n+1}) = y(x_n) + hy^{'}(x_n) +\frac{h^2}{2}y^{{'}{'}}(\xi) \\
+        \Rightarrow& y(x_{n+1}) \approx y(x_n)+hf(x_n, y(x_n)) \\
+        \Rightarrow& 
+        y_{n+1} = y_n +hf(x_n, y_n)
+    \end{split}
+\end{equation*}
+
+积分方法推导：
+由\ref{eq:diff}可得：
+\begin{equation*}
+    \begin{array}{lr}
+        \int^{x_{n+1}}_{x_n} \frac{dy}{dx}dx = \int^{x_{n+1}}_{x_n} f(x,y)dx=y(x_{n+1}) - y(x_n) \approx \\
+        f(x_n, y(x_n))(x_{n+1} - x_n) = hf(x_n, y(x_n)) 
+    \end{array}
+\end{equation*}
+
+\subsection{向后Euler公式，梯形公式和改进Euler公式}
+向后Euler公式，隐式公式：
+\begin{equation}
+    \begin{array}{lr}
+        y(x_{n+1}) \approx y(x_n) + hf(x_{n+1}, y(x_{n+1})) \Rightarrow \\
+        y_{n+1} = y_n +hf(x_{n+1}, y_{n+1})
+    \end{array}
+    \label{eq:eulerback}
+\end{equation}
+
+梯形公式(隐式公式)，当$f(x,y)$关于y是线性，则可以直接求出$y_{n+1}$：
+\begin{equation}
+    \begin{array}{lr}
+        f(x, y(x)) \approx \frac{f(x_n, y(x_n))+f(x_{n+1}, y(x_{n+1}))}{2} \\
+        y(x_{n+1}) \approx y(x_n) + h\frac{f(x_n, y(x_n))+f(x_{n+1}, y(x_{n+1}))}{2}, n=0,1,2,\dots
+    \end{array}
+    \label{eq:eulermid}
+\end{equation}
+
+隐式方法的稳定性往往较好（可取较大步长），但对于非线性问题，方程难解。
+
+以梯形公式\ref{eq:eulermid}为例说明如何而求$y_{n+1}$：
+\begin{equation*}
+    \begin{array}{lr}
+        y^{(0)}_{n+1} = y_n + hf(x_n, y_n) \\
+        y^{(k+1)}_{n+1} = y_n + h\frac{f(x_n, y_n) + f(x_{n+1}, y^{(k)}_{n+1})}{2}, k=0,1,2,\dots
+    \end{array}
+\end{equation*}
+
+若迭代一次即终止，则有如下公式：
+\begin{equation*}
+    \begin{array}{lr}
+        \overline{y}_{n+1} = y_n + hf(x_n, y_n) \\
+        y_{n+1} = y_n +\frac{h}{2}[f(x_n, y_n)+f(x_{n+1}, \overline{y}_{n+1})], n=0,1,2,\dots
+    \end{array}
+\end{equation*}
+整理可得改进Euler公式：
+\begin{equation}
+    y_{n+1} = y_n + \frac{h}{2}[f(x_n, y_n)+ f(x_{n+1}, y_n + hf(x_n, y_n))]
+    \label{eq:eulerimprov}
+\end{equation}
+
+\subsection{单步法的截断误差和阶}
+所有单步法均可写成：
+$$y_{n+1} = y_n + h\phi(x_n, y_n, y_{n+1}, h) $$
+其中$\phi$与f有关，$\phi$称为增量函数
+
+若方法显式则：
+\begin{equation}
+    y_{n+1}=y_n+h\phi(x_n, y_n, h) 
+    \label{eq:explicit}
+\end{equation}
+
+称$e_{n+1} = y(x_{n+1})-y_{n+1} $为在$x_{n+1}$点的整体截断误差
+
+\begin{definition}
+    设$y(x)$是初值问题\ref{eq:diff}的准确解。称
+    \begin{equation}
+        T_{n+1}(x) = y(x_{n+1})-y(x_n)-h\phi(x_n, y(x_n), h) 
+    \end{equation}
+    为显式单步法\ref{eq:explicit}在$x_{n+1}$处的局部截断误差。
+\end{definition}
+
+\begin{definition}
+    若$T_{n+1} = O(h^{P+1})$，则称此方法具有P阶精度，若$T_{n+1}=\phi^*(x_n, y(x_n))h^{P+1}+O(h^{P+2})$，则称
+    $\phi^*(x_n, y(x_n))h^{P+1}$为该方法的局部截断误差主项。
+\end{definition}
+
+对于单步隐式方法$T_{n+1}=y(x_{n+1}) -y(x_n)-h\phi(x_n, y(x_n), y(x_{n+1}), h) $
+
+例：求梯形公式的局部截断误差主项和阶
+解：
+\begin{equation*}
+    \begin{split}
+        &T_{n+1} = y(x_{n+1})-y(x_n)-h\frac{f(x_n, y(x_n))+f(x_{n+1},y(x_{n+1}))}{2} \\
+        =&y(x_n+h)-y(x_n)-\frac{h}{2}[y^{'}(x_n)+ y^{'}(x_{n}+h)] \\
+        =&-\frac{h^3}{12}y^{{'}{'}{'}}(x_n)+O(h^4)
+    \end{split}
+\end{equation*}
+$\therefore$梯形公式的局部截断误差为$-\frac{h^3}{12}y^{{'}{'}{'}}(x_n)+O(h^4)$，主项为：$-\frac{h^3}{12}y^{{'}{'}{'}}(x_n)$，阶：2阶。
+
+思考题：改进Euler方法的$T_{n+1}=?$主项为？阶？
+（多元函数求2阶导）
+
+\begin{proof}
+    \begin{equation*}
+        \begin{split}
+            &y(x_{n+1})=y(x_n)+hf+\frac{h^2}{2}(f_x+ff_y)+ \\
+            &\quad \frac{h^3}{6}(f_{xx} + f_{xy}f + ff_{yx}+f^2f_{yy}+f_yf_x+f^2_yf) + O(h^4)
+        \end{split}
+    \end{equation*}
+    \begin{equation*}
+        \begin{split}
+            &\overline{y} = y(x_n) + \frac{h^2}{2}(f_x+ff_y) \\
+            &\quad \frac{h^3}{4}(f_{xx} + f_{xy}f + ff_{yx}+f^2f_{yy}+f_yf_x+f^2_yf) + O(h^4)
+        \end{split}
+    \end{equation*}
+    \begin{align*}
+        &y(x_{n+1}) - \overline{y} \\
+        =& -\frac{h^3}{12}(f_{xx} + f_{xy}f + ff_{yx}+f^2f_{yy}+f_yf_x+f^2_yf) + O(h^4)
+    \end{align*}
+\end{proof}
+
+\section{Runge-kutta方法}
+\subsection{R-K法基本思想}
+向前Euler(1阶)：
+$$
+\left\{
+\begin{array}{lr}
+    y_{n+1} = y_n+hk_1\\
+    k_1=f(x_n, y_n)
+\end{array}\right.
+$$
+
+梯形公式(2阶)：
+$$
+\left\{
+\begin{array}{lr}
+    y_{n+1} = y_n + h(\frac{1}{2}k_1+\frac{1}{2}k_2)\\
+    k_1 = f(x_n, y_n)\\
+    k_2 = f(x_{n+1}, y_{n+1})
+\end{array}\right.
+$$
+
+取更多点斜率加权平均，构造更高精度的数值方法。
+
+\subsection{R-K方法的构造}
+假设P级R-K方法的公式为：
+\begin{equation}
+\begin{array}{lr}
+    y_{n+1} = y_n +h\sum^P_{i=1}c_ik_i, &k_1=f(x_n,y_n)\\
+    k_i = f(x_n+a_ih, y_n+h\sum^{i-1}_{j=1}b_{ij}k_j), & i=2,3,\dots, P 
+\end{array}
+\end{equation}
+
+以$P=2$为例，构造R-K方法：
+$$
+\begin{array}{lr}
+    y_{n+1} = y_n + h(c_1k_1+c_2k_2), k_1=f(x_n, y_n)\\
+    k_2 = f(x_n+a_2h, y_n+hb_{21}k_1)
+\end{array}
+$$
+
+\begin{equation*}
+    \begin{array}{lr}
+        T_{n+1}=y(x_{n+1})-y(x_n)-h\{c_1f(x_n, y(x_n)) \\
+        \quad \quad +c_2f[x_n+a_2h, y(x_n+b_{21}hf(x_n, y(x_n)))]\}
+    \end{array}
+\end{equation*}
+
+构造麻烦的地方在于$y(x_n+b_{21}f(x_n, y(x_n))$无法写成y的形式，使用2元函数泰勒展开。
+\begin{equation*}
+    \begin{split}
+        &y(x_{n+1})=[y+hy^{'}+\frac{h^2}{2}y^{{'}{'}}+\frac{h^3}{6}y^{{'}{'}{'}}+O(h^4)]|_{x=x_n}\\
+        =&y+hf+\frac{h^2}{2}(f_x+f_yf)+\frac{h^3}{6}() \\
+        &\overline{y}_{n+1} = y + h\{c_1f + c_2[f+a_2hf_x+hb_{21}ff_y]\} + O(h^3)
+    \end{split}
+\end{equation*}
+
+将$y(x_{n+1})$与$\overline{y}_{n+1}$中前三项对应相等即可得：
+$$
+\left\{
+\begin{array}{lr}
+    c_1+c_2 = 1 \\
+    c_2a_2 = \frac{1}{2} \\
+    c_2b_{21} = \frac{1}{2}
+\end{array}\right.
+$$
+取$c_2=1$则$c_1=0,a_2=b_{21}=\frac{1}{2}$，
+$$
+\left\{
+\begin{array}{lr}
+    k_1 = f(x_n, y_n) \\
+    k_2 = f(x_n+\frac{1}{2}h, y_n+\frac{1}{2}hk_1)
+\end{array}\right.
+$$
+
+\begin{equation}
+    \left\{
+        \begin{array}{lr}
+            y_{n+1} = y_n+hk_2 \\
+            y_{n+1} = y_n+hf(x_n+\frac{1}{2}h, y_n+\frac{1}{2}hf(x_n, y_n))
+        \end{array}
+        \right.
+\end{equation}
+
+如果取$c_1=c_2=\frac{1}{2}, a_2=b_{21}=1$即可得改进Euler公式\ref{eq:eulerimprov}。
+
+4阶R-K方法：
+\begin{equation}
+    \left\{
+    \begin{array}{lr}
+        y_{n+1} = y_n +\frac{h}{6}[k_1+2k_2+2k_3+k_4], k_1=f(x_n, y_n) \\
+        k_2 = f(x_n+\frac{1}{2}h, y_n+\frac{h}{2}k_1), k_3=f(x_n+\frac{1}{2}h, y_n+\frac{h}{2}k_2) \\
+        k_4 = f(x_n+h, y_n+hk_3)
+    \end{array}\right.
+\end{equation}
+
+\end{document}

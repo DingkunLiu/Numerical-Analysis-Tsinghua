@@ -1,0 +1,507 @@
+%!TEX program=xelatex
+\documentclass[a4paper]{article}
+
+\usepackage{amsmath}
+\usepackage{amsthm}
+\newtheorem{definition}{定义}[section]
+\newtheorem{theorem}{定理}[section]
+\newtheorem{lemma}{引理}[section]
+\newtheorem{example}{例}[section]
+
+\makeatletter % `@' now normal "letter"
+\@addtoreset{equation}{section}
+\makeatother  % `@' is restored as "non-letter"
+\renewcommand\theequation{\oldstylenums{\thesection}%
+                   .\oldstylenums{\arabic{equation}}}
+
+
+\usepackage{ctex}
+\usepackage{extarrows}
+\usepackage{amssymb}
+\usepackage{tabularx}
+\usepackage{multicol}
+\usepackage{multirow}
+\usepackage{booktabs}
+\usepackage{hyperref}
+
+\title{第三章\ 非线性方程和方程组的数值解法}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+$f(x)=0$的解也叫根或$f(x)$的零点。\\
+若$f(x)=0(x\in [a,b])$有解，则称$[a,b]$为有根区间，若$f(x) \in C[a,b]$，且$f(a)f(b)<0$在$[a,b]$至少存在一实根。
+
+\section{二分法}
+过程略。\\
+$\because b_2-a_2 = \frac{b-a}{2}$，由此易证$b_n-a_n=\frac{b-a}{2^{n-1}}$；且$x_n, x^* \in [a_n, b_n]$\\
+$\therefore |x_n-x^*|<\frac{b_n-a_n}{2}=\frac{b-a}{2^n}<\varepsilon, \therefore n > \frac{ln\frac{b-a}{\varepsilon}}{ln2} $
+
+\section{单个方程的不动点迭代法}
+\subsection{不动点迭代法}
+\begin{equation}
+    f(x)=0, x\in [a,b]
+    \label{eq:2.1}
+\end{equation}
+将(\ref{eq:2.1})转化为如下等价的方程：
+\begin{equation}
+    x=\phi(x), \phi(x)\in [a,b]
+\end{equation}
+由此可得如下迭代公式：
+\begin{equation}
+    x_{k+1} = \phi(x_k), k=0,1,2,\dots
+    \label{eq:2.3}
+\end{equation}
+若$x_k$收敛，即$x_k\rightarrow x^*, k\rightarrow \infty$则$x^*=\phi(x^*)$.$\phi(x)$称为迭代函数，$x^*$称为$\phi(x)$的不动点。
+
+\begin{theorem}
+    \textbf{!!}(压缩映射原理)设$\phi(x)\in C[a,b]$，若满足下面条件：
+    \begin{enumerate}
+        \item 映内性:\begin{equation}
+            \phi(x) \in [a,b], \forall x\in [a,b]
+            \label{eq:2.4}
+        \end{equation}
+        \item 压缩性(Lipschitz条件)：$\exists 0\le L <1$使得：
+        \begin{equation}
+            |\phi(x)-\phi(y)|\le L|x-y|, \forall x,y\in [a,b]
+            \label{eq:2.5}
+        \end{equation}
+    \end{enumerate}
+    则$\forall x_0\in[a,b]$，由\ref{eq:2.3}产生的迭代序列$\{x_k\}$都收敛到$\phi$的\textbf{唯一}不动点，且有误差估计式：
+    \begin{equation}
+        |x_k-x^*|\le \frac{L^k}{1-L}|x_1-x_0|
+        \label{eq:2.6}
+    \end{equation}
+    \label{theorem:2.1}
+\end{theorem}
+
+\begin{proof}
+    分四步: (1)不动点存在(2)唯一性(3)收敛性(4)误差估计
+
+    \begin{enumerate}
+        \item 令$f(x)=x-\phi(x)$，则由\ref{eq:2.4}可得$f(a)=a-\phi(a)\le 0, f(b)=b-\phi(b)\ge 0,\therefore \exists x^* \in [a,b], s.t. f(x)=0, $
+        i.e.$x^*-\phi(x^*)=0\Leftrightarrow x^*=\phi(x^*)$
+        \item 唯一性[反证法]：设$x_1^*=\phi(x_1^*),  x_2^*=\phi(x_2^*), x_1^*\neq x_2^*, x_1^*, x_2^*\in [a,b]$
+            则$| x_1^*- x_2^*|=|\phi( x_1^*)-\phi( x_2^*) |\le L| x_1^*- x_2^*|<| x_1^*- x_2^*|$矛盾，$\therefore$唯一。
+        \item 收敛性：$\because \phi(x)\in [a,b], \forall x\in [a,b]$\\
+        $\therefore x_k\in [a,b], k=0,1,2,\dots$\\
+        $\therefore |x_k-x^*|=|\phi(x_{k-1})-\phi(x^*) |\le L|x_{k-1}-x^*|\le \dots \le L^k|x_0-x^*|\rightarrow 0, k\rightarrow \infty$\\
+        $\therefore \lim_{k\rightarrow \infty}x_k=x^*$
+        \item 误差估计式：
+        $\forall m$, 
+        \begin{equation}
+            \begin{split}
+                |x_{k+m}-x_k |&=|x_{k+m}-x_{k+m-1}+x_{k+m-1}-x_{k+m-2}+x_{k+m-2}+\dots+x_{k+1}-x_k | \\
+        &\le|x_{k+m}-x_{k+m-1}|+|x_{k+m-1}-x_{k+m-2}|+\dots+|x_{k+1}-x_k |
+            \end{split}
+            \label{eq:*1}
+        \end{equation}
+        而$|x_{k+j+1}-x_{k+j} |=|\phi(x_{k+j})-\phi(x_{k+j-1})|\le L|x_{k+j}-x_{k+j-1} |\le \dots \le L^{k+j}|x_1-x_0|$\\
+        $\therefore m\rightarrow \infty, |x_k-x^*|\le \frac{L^k}{1-L}|x_1-x_0|$
+    \end{enumerate}
+\end{proof}
+
+注释：
+\begin{enumerate}
+    \item 由\ref{eq:*1}式易证一个误差估计式$|x_k-x^*|\le \frac{L}{1-L}|x_k-x_{k-1}|$，当L不接近于1时，可用$|x_k-x_{k-1}|<\varepsilon$作为终止条件。
+    \item 可用\ref{eq:2.6}估计迭代次数：
+    $$k\ge \frac{ln\varepsilon-ln(|x_1-x_0|/(1-L))}{lnL}$$
+    \item 当L越小，收敛越快
+    \item 满足定理条件的迭代法是全局收敛的。
+\end{enumerate}
+
+推论：若将定理\ref{theorem:2.1}中的条件（2）改为$\phi(x)$的导数在$[a,b]$上存在，且$\phi^{'}(x)\le L<1, \forall x\in[a,b]$则定理\ref{theorem:2.1}的结论仍成立。
+
+\begin{example}
+    解方程$f(x)=x^3+2x^2-4=0, x^*\approx 1.130395$
+    易证$f(x)=0$在$[1,2]$上有根，$f(1)<0,f(2)>0$；将$f(x)=0$改写为如下不同形式：
+    \begin{enumerate}
+        \item $$x=x-x^3-2x^2+4\overset{\Delta}{=} \phi_1(x)$$
+        \item $$x=[2(\frac{2}{x}-x)]^{\frac{1}{2}} \overset{\Delta}{=} \phi_2(x)$$
+        \item $$x=(2-\frac{x^3}{2})^\frac{1}{2}\overset{\Delta}{=} \phi_3(x) $$
+        \item $$x=2\sqrt{\frac{1}{x+2}}\overset{\Delta}{=} \phi_4(x)$$
+        \item $$x=x-\frac{x^3+2x^2-4}{3x^2+4}\overset{\Delta}{=} \phi_5(x)$$
+    \end{enumerate}
+    
+    由此得到的迭代关系式，1和2不收敛，3需要120次收敛，4需要9次迭代，5需要4次迭代。
+\end{example}
+
+\subsection{局部收敛性和收敛阶}
+\begin{definition}
+    设$\phi(x)$在$[a,b]$区间有不动点$x^*$，若$\exists x^*$的一个邻域$R(x^*)=[x^*-\varepsilon_0, x^*+\varepsilon_0]\subset [a,b] $，
+    $\varepsilon_0>0$使对$\forall x_0\in R(x^*)$，由$x_{k+1}=\phi(x_k) $产生的迭代序列$\{x_k\}\subset R(x^*)$且收敛于$x^*$，则称此迭代方法局部收敛。
+\end{definition}
+
+\begin{theorem}
+    设$x^*$为$\phi(x)$的不动点，$\exists R(x^*)$，$\phi(x)\in C^1[R(x^*)]$，且$|\phi^{'}(x^*)|<1$，则$x_{k+1}=\phi(x_k) $局部收敛。
+\end{theorem}
+\begin{proof}
+    $\because \phi^{'}(x)$连续，且$|\phi^{'}(x)|<1, \therefore$由微积分定理可知：$\exists x^*$的一个邻域$R(x^*)=[x^*-\varepsilon_0, x^*+\varepsilon_0]$，使得$|\phi^{'}(x)|\le L<1, \forall x\in R(x^*)$\\
+    任取$x\in R(x^*)$，则$|\phi(x)-x^*|=|\phi(x)-\phi(x^*)|=|\phi(x)-x^*|=|\phi^{'}(\xi)|\cdot|x-x^*|\le L|x-x^*|<|x-x^*|\le \varepsilon$\\
+    $\Rightarrow \phi(x)\in [R(x^*)]$，满足映内性。\\
+    显然$\forall x, y\in R(x^*) $，$|\phi(x)-\phi(y)|=|\phi^{'}(\eta)||x-y|\le L|x-y|$，压缩性。\\
+    $\therefore$由压缩映射原理可知，迭代法具有局部收敛性。
+\end{proof}
+
+\paragraph{思考题}
+\begin{itemize}
+    \item $x_{k+1}=sin(x_k), x^*=0, |\phi^{'}(x^*)|=1 $，任取$x_0$收敛
+    \item $x_{k+1}=x_k+x_k^3, x^*=0, |\phi^{'}(x^*)|=1 $，发散
+    \item $x_{k+1}=x_k+x_k^2, x^*=0, |\phi^{'}(x^*)|=1 $，$x_0>0$发散；$x_0<0$收敛
+\end{itemize}
+证明：$|e_{k+1} |=|x_{k+1}-x^* |=|\phi(x_k)-\phi(x^*)|=|\phi^{'}(\xi)||x_k-x^*|$
+
+\begin{definition}
+    设$\{x_k\}$收敛于$x^*$，记$e_k=x_k-x^*$，若$\exists$实数$p\ge 1$及非零常数C，使$\lim_{k\rightarrow\infty}\frac{e_{k+1}}{|e_k|^p}=C $，则称迭代序列$\{x_k\}$为p阶收敛的。
+
+    $p=1$ 称为线性收敛；$p=2$称为平方收敛。
+
+    $p=1$时，$0<c<1$；$p>1$，超线性收敛。
+\end{definition}
+
+如果$\phi(x)\in C^1[R(x^*)]$，则$\lim_{k\rightarrow\infty}\frac{|e_{k+1}|}{e_k}=\lim_{k\rightarrow\infty}\frac{|\phi(x_k)-\phi(x^*)|}{x_k-x^*}=|\phi^{'}(x^*)| \left\{
+    \begin{array}{lr}
+        \neq 0, <1 \ \text{线性}\\
+        =0 \ \text{超线性}
+    \end{array}
+    \right. $
+
+\begin{theorem}
+    设$\phi(x)$有不动点$x^*, p>1,\phi(x)\in C^p[R(x^*)]$，且$\phi^{{'}{'}}(x^*)=\phi^{(3)}(x^*)=\dots = \phi^{(p-1)}(x^*)=0$，$\phi^{(p)}(x^*)\neq 0$，则称迭代法是p阶收敛的，且$\lim_{k\rightarrow\infty}\frac{|e_{k+1}|}{e_k}=\frac{\phi^{(p)}(x^*)}{p!}$
+\end{theorem}
+\begin{proof}
+    $\because \phi^{'}(x^*)=0, \therefore$由局部收敛性定理可知$\forall x_0\in R(x^*) $收敛
+    $$\phi(x_k)=\phi(x^*)+\phi^{'}(x^*)(x_k-x^*)+\dots+\frac{\phi^{(p-1)}(x^*)}{(p-1)!}(x_k-x^*)^{p-1}+ \frac{\phi^{(p)}(\xi)}{(p)!}(x_k-x^*)^{p}$$
+    $\Rightarrow e_{k+1}=x_{k+1}-x^*= \frac{\phi^{(p)}(\xi)}{(p)!}e^p_k\Rightarrow \lim_{k\rightarrow\infty}\frac{e_{k+1}}{e_k^p}=\frac{\phi^{(p)}(x^*)}{p!}$
+\end{proof}
+
+\section{迭代加速方法}
+\paragraph{Steffensen迭代法}
+\begin{equation*}
+    \left\{
+        \begin{array}{lr}
+            y_k=\phi(x_k)\\
+            z_k=\phi(y_k)\\
+            x_{k+1}=x_k-\frac{(y_k-x_k)^2}{z_k-2y_k+x_k}
+        \end{array}
+        \right.
+\end{equation*}
+其对应的迭代函数：
+\begin{equation*}
+    \begin{array}{lr}
+        \Psi(x)=x-\frac{[\phi(x)-x]^2}{\phi[\phi(x)]-2\phi(x)+x}, |\phi^{'}(x^*)|<1 \\
+        x_{k+1}=\Psi(x_k)
+    \end{array}
+\end{equation*}
+易证若$\phi(x)\in C^1[R(x^*)]$，则$x^*=\Psi(x^*)\Leftrightarrow x^*=\phi(x^*) $
+
+\begin{theorem}
+    设$x^*=\phi(x^*)$，且$\phi^{(p+1)}(x)\exists, \forall x\in R(x^*) $，则当$p=1$时，若$\phi^{'}(x^*)\neq 1 $，那么该方法是二阶的，否则为一阶收敛的，当$x_{k+1}=\phi(x_k)$是p阶收敛的$(p>1)$，则该法是$2p-1$阶的。
+\end{theorem}
+
+\section{Newton迭代法}
+如果取$\phi(x)=x-\frac{f(x)}{f^{'}(x)}$，则有如下Newton迭代方法：
+\begin{equation}
+    x_{k+1}=x_k-\frac{f(x_k)}{f^{'}(x_k)},k=0,1,\dots
+    \label{eq:4.1}
+\end{equation}
+显然有$\phi^{'}(x)=\frac{f(x)f^{{'}{'}}(x)}{[f^{'}(x)]^2}\Rightarrow \phi^{'}(x^*)=0$\\
+$\therefore $(\ref{eq:4.1})收敛。
+
+\begin{theorem}
+    设$f(x^*)=0,f^{'}(x^*)\neq 0 $[单根，不存在重根]，且$f(x)\in C^m[R(x^*)], m\ge 2$则Newton迭代方法\ref{eq:4.1}至少2阶收敛，且$\lim_{k\rightarrow \infty}\frac{|e_{k+1}|}{e_k^2}=\frac{f^{{'}{'}}(x^*)}{2f^{'}(x^*)}$
+\end{theorem}
+
+\subsection{重根时的Newton迭代法及加速}
+设$x^*$为$f(x)=0$的$m(m\ge L)$重根，i.e.$f(x)=(x-x^*)^mq(x),q(x^*)\neq 0 $，则
+$\phi^{'}(x)=\frac{f(x)f^{{'}{'}}(x)}{[f^{'}(x)]^2}, \therefore  \phi^{'}(x) =1-\frac{1}{m}<1$
+
+有重根时Newton迭代法是收敛的，且为一阶收敛：$\lim_{k\rightarrow \infty}\frac{|e_{k+1}|}{e_k}=1-\frac{1}{m}$。
+
+\paragraph{Newton迭代法加速}
+\begin{itemize}
+    \item $\phi_1(x)=x-m\frac{f(x)}{f^{'}(x)}$
+    \item $\phi_2(x)=x-\frac{[f^{'}(x)]^2}{[f^{'}(x)]^2-f(x)f^{{'}{'}}(x)}$
+\end{itemize}
+
+\subsection{割线法}
+
+将\ref{eq:4.1}的$f^{'}(x_k) $用其近似差商代替，i.e.$f^{'}(x_k)\approx \frac{f(x_k)-f(x_{k-1})}{x_k-x_{k-1}}$将此代入Newton法即可得：
+\begin{equation}
+    x_{k+1}=x_k-\frac{f(x_k)(x_k-x_{k-1})}{f(x_k)-f(x_{k-1})}
+    \label{eq:4.2}
+\end{equation}
+\begin{theorem}
+    设$f(x)$在其零点$x^*$邻域二阶连续可导，且$f^{'}(x^*)\neq 0$，则$\exists \varepsilon >0$，当$x_0, x_1\in [x^*-\varepsilon, x^*+\varepsilon]$时，割线法\ref{eq:4.2}收敛，且收敛阶为$p=\frac{1+\sqrt{5}}{2}\approx 1.618$
+\end{theorem}
+
+\section{非线性方程组的不动点迭代方法}
+设有如下非线性方程组：
+\begin{equation}
+    f_1(x_1,x_2,\dots, x_n)=0,f_2(x_1,x_2,\dots, x_n)=0,\dots, f_n(x_1, x_2, \dots, x_n)=0
+    \label{eq:5.1}
+\end{equation}
+令$x=(x_1, x_2, \dots, x_n)^T, F(x)=(f_1, f_2, \dots, f_n)^T$则\ref{eq:5.1}可写成如下形式：
+\begin{equation}
+    F(x)=0\\
+    \label{eq:5.2}
+\end{equation}
+
+\subsection{基本概念}
+假设$f_1, f_2, \dots, f_n$是定义在子集$D\subset R^n$上的实值函数，则可得$F:D\subset R^n\rightarrow R^n$表示
+F为$R^n$中子集D到$R^n$的映射。更一般的，$F:D\subset R^n\rightarrow R^m$，若$F(x)$为标量，则$\lim_{\Delta x\rightarrow 0}\frac{F(x+\Delta x)-F(x)-F^{'}(x)\Delta x}{\Delta x}=0 $
+
+\begin{definition}
+    设$F:D\subset R^n\rightarrow R^m$，若$\exists A\in R^{m\times n} $，对D内x及$\Delta x\in R^n$有：
+    $$\lim_{\Delta x\rightarrow 0}\frac{||F(x+\Delta x)-F(x)-A\Delta x||}{||\Delta x||}=0$$
+    则称F在x可导，称A为F在x的Frehet导数，记为
+    $$F^{'}(x)=A=\left[
+        \begin{matrix}
+            \frac{\partial f_1}{\partial x_1} & \frac{\partial f_1}{\partial x_2} & \dots & \frac{\partial f_1}{\partial x_n} \\
+            \vdots & \vdots & \dots & \vdots \\
+            \frac{\partial f_n}{\partial x_1} & \frac{\partial f_n}{\partial x_2} & \dots & \frac{\partial f_n}{\partial x_n}
+        \end{matrix}
+        \right] $$
+\end{definition}
+
+\begin{theorem}
+    设$F:D\subset R^n\rightarrow R^m$在$x\in D\subset R^n$是Frechet可微的，则$F(x)$在x连续，i.e.$\lim_{\Delta x\rightarrow 0}||F(x+\Delta x)-F(x)||=0$
+\end{theorem}
+
+\subsection{不动点迭代法}
+将$F(x)=0$转化成等价的方程组
+\begin{equation}
+    x=\phi(x)
+    \label{eq:5.3}
+\end{equation}
+其中$\phi D\subset R^n\rightarrow R^n$，且$\phi$是连续的，若$\exists x^*\in D$使得$x^*=\phi(x^*)$，则称$x^*$为$\phi(x)$的不动点，由此可构造如下迭代方法
+\begin{equation}
+    x^{(k+1)}=\phi(x^{(k)}), k=0,1,2,\dots
+    \label{eq:5.4}
+\end{equation}
+其中$x^{(k)}=(x^{(k)}_1, x^{(k)}_2,\dots, x^{(k)}_n) $
+
+\begin{definition}
+    设$\{x^{(k)} \}$收敛于$x^*$，
+    \begin{enumerate}
+        \item 若$\exists$实数$p\ge 1$及常数$C>0$，使
+        \begin{equation*}
+            \lim_{k\rightarrow \infty}\frac{||x^{(k+1)}-x^*||}{||x^{(k)}-x^*||^p}=C
+        \end{equation*}则称$\{x^{(k)} \}$为p阶收敛的；其中$p=1$时，$0<C<1$
+        \item 若存在实数$p\ge 1$和常数$C>0$，使$||x^{(k+1)}-x^* ||\le C||x^{(k)}-x^* ||^p, k=0,1,2,\dots$成立，其中$p=1$时，$0<c<1$，则称$\{x^{(k)} \}$至少p阶收敛；当p=1时，$\{x^{(k)} \}$至少线性收敛
+        \item 若存在实数$p\ge 1$，且$\lim_{k\rightarrow 0}\frac{||x^{(k+1)}-x^* ||}{||x^{(k)}-x^* ||^p}=0 $，则称$\{x^{(k)} \}$为超p阶收敛。
+    \end{enumerate}
+\end{definition}
+
+\begin{theorem}
+    \textbf{（压缩映射原理）}设$D\subset R^n$中的一个闭集，若$\phi:D\rightarrow D (i.e. \phi(x)\in D, \forall x \in D)$为压缩映射，即满足如下条件：
+    \begin{equation}
+        ||\phi(x)-\phi(y) ||\le L||x-y||, 0<L<1, \forall x,y\in D
+    \end{equation}
+    则有如下结论：
+    \begin{enumerate}
+        \item $\forall x^{(0)}\subset D $，由\ref{eq:5.4}产生的迭代序列$\{x^{(k)} \}\subset D$
+        \item $\phi$在D上存在唯一的不动点$x^*$使$x^*=\phi(x^*)$
+        \item $||x^{(k+1)}-x^* ||\le ||x^{(k)}-x^* ||,k=0,1,2,\dots$，i.e.$\{x^{(k)} \}$至少线性收敛
+        \item 有误差估计式：
+        \begin{equation}
+            ||x^{(k)}-x^* ||\le \frac{L^k}{1-L}||x{(1)}-x^{(0)} ||
+        \end{equation}
+    \end{enumerate}
+\end{theorem}
+\begin{proof}
+    \begin{enumerate}
+        \item 由映内性，显然
+        \item 由压缩性的$||x^{(k+1)}-x^{(k)}||=||\phi(x^{(k)})-\phi(x^{(k-1)})||\le L||x^{(k)}-x^{(k-1)}||\le \dots \le L^k||x^{(1)}-x^{(0)} ||$\\
+        于是对$\forall m \in Z$，有
+        \begin{equation*}
+            \begin{split}
+                ||x^{(k+m)}-x^{(k)}|| &= ||(x^{(k+m)}-x^{(k+m-1)})+(x^{(k+m-1)}-x^{(k+m-2)})+\\
+                &\quad \dots + (x^{(k+1)}-x^{(k)}) ||\\
+                &\le (L^{k+m-1}+L^{k+m-2}+\dots+L^k)||x^{(1)}-x^{0}|| \\
+                &\le \frac{L^k}{1-L}||x^{(1)}-x^{0}||
+            \end{split}
+        \end{equation*}
+        $\because 0<L<1$，当$k\rightarrow\infty$时，$||x^{(k+m)}-x^{(k)}||\rightarrow 0$\\
+        $\because \{x^{(k)} \}$为一个柯西序列，$\{x^{(k)} \}$有一个有限极限，$\lim_{k\rightarrow\infty}x^{(k)}=x^* $\\
+        又根据定理条件，$\phi(x)$在D上连续$\therefore \lim_{k\rightarrow \infty}x^{(k+1)}=\lim_{k\rightarrow \infty}\phi(x^{(k)})=\phi(x^*), \lim_{k\rightarrow \infty}x^{(k+1)}=x^* $\\
+        $\therefore \phi(x^*)=x^* $\\
+        $\because$D为闭集，且$x^{(k)}\in D, \forall k=0,1,2,\dots \therefore \{x^{(k)} \}$的极限$x^*\in D$
+
+        假设还有另一个不动点$y^*\in D, x^*\neq y^*$，则$||x^*-y^*||=||\phi(x^*)-\phi(y^*) ||\le L||x^*-y^*||<||x^*-y^*||$，矛盾。
+        \item $||x^{(k+1)}-x^{(k)}||=||\phi(x^{(k)})-\phi(x^*) ||\le ||x^{(k)}-x^*||$，且$0<L<1$，至少线性收敛
+        \item $||x^{(k+m)}-x^{(k)}||\le \frac{L^k}{1-L}||x^{(1)}-x^{(0)}||$\\
+            当$m\rightarrow\infty$时，$||x^{(k)}-x^*||\le \frac{L^k}{1-L}||x^{(1)}-x^{(0)}||$
+    \end{enumerate}
+\end{proof}
+
+\begin{definition}
+    设$x^*$为$\phi$的不动点，若$\exists x^*$的一个邻域$S(x^*)\subset D, \forall x^{(0)}\in S(x^*) $，有\ref{eq:5.4}产生的序列$\{x^{(k)} \}\subset S(x^*) $，且$\lim_{k\rightarrow\infty}x^{(k)}=x^* $则称$\{x^{(k)} \}$有局部收敛性。
+\end{definition}
+
+\begin{theorem}
+    \label{theorem:5.3}
+    设$\phi:D\subset R^n \rightarrow R^n, x^*\in D$为$\phi$的不动点，若$\exists$一个开球，$S_r(x^*)=\{x|||x-x^*||<r, r>0\}\subset D $，使得
+    $||\phi(x)-\phi(x^*) ||\le L||x-x^*||,\forall x\in S_r(x^*), 0\le L<1 $则对$\forall x^{(0)}\in S_r(x^*) $，由\ref{eq:5.4}产生的$\{x^{(k)} \}$具有如下性质：
+    \begin{enumerate}
+        \item $x^{(k)}\in S_r(x^*), k=0,1,2,\dots $
+        \item $\lim_{k\rightarrow\infty}x^{(k)}=x^* $
+        \item $\{x^{(k)} \}$至少线性收敛。
+    \end{enumerate}
+\end{theorem}
+\begin{proof}
+    \begin{enumerate}
+        \item 数学归纳法证明 $||x^{(k+1)}-x^* ||<r$
+        \item $||x^{(k+1)}-x^* ||=||\phi(x^{(k)})-\phi(x^*) ||\le L||x^{(k)}-x^*||\le \dots \le L^{k+1}||x^{(0)}-x^* || \rightarrow 0, k\rightarrow\infty$
+        \item $||x^{(k+1)}-x^* ||\le L||x^{(k)}-x^*||, 0<L<1$至少线性收敛
+    \end{enumerate}
+\end{proof}
+
+\begin{theorem}
+    设$\phi:D\subset R^n \rightarrow R^n, \phi$在D内有不动点$x^*$，且$\phi$在$x^*$可导，$\rho(\phi^{'}(x^*))=\lambda <1$，则$\exists$开球$S_r(x^*)\subset D$对$\forall x^{(0)}\in S_R(x^*) $，由\ref{eq:5.4}产生的迭代序列$\{x^{(k)} \}$收敛到$x^*$
+\end{theorem}
+\begin{proof}
+    $\because \lambda<1, \therefore \exists \varepsilon >0, s.t. \lambda+2\varepsilon<1$\\
+    由范数与谱半径的关系可知，对于$\varepsilon$，存在一种从属范数$||\cdot||_\varepsilon$，使得$||\phi(x^*) ||_\varepsilon<\lambda+\varepsilon$。又$\because \phi(x)$在$x^*$可导，$\therefore $由导数定义可知，对于$\varepsilon>0, \exists S_r(x^*), \forall x\in S_r(x^*), ||\phi(x)-\phi(x^*)-\phi^{'}(x^*)(x-x^*) ||_\varepsilon\le \varepsilon||x-x^*||_\varepsilon $
+    \begin{equation*}
+        \begin{split}
+            ||\phi(x)-\phi(x^*) ||_\varepsilon &=||\phi(x)-\phi(x^*)-\phi^{'}(x^*)(x-x^*)+\phi^{'}(x^*)(x-x^*) ||_\varepsilon\\
+            &\le ||\phi(x)-\phi(x^*)-\phi^{'}(x^*)(x-x^*)||_\varepsilon+||\phi^{'}(x^*)(x-x^*) ||_\varepsilon\\
+            &< \varepsilon||x-x^*||_\varepsilon + (\lambda+\varepsilon)||x-x^*||_\varepsilon\\
+            &= (\lambda+2\varepsilon)||x-x^*||_\varepsilon
+        \end{split}
+    \end{equation*}
+    $\because \lambda+2\varepsilon <1, \therefore$由定理\ref{theorem:5.3}可知，$\{x^{(k)} \}$收敛于$x^*$
+\end{proof}
+
+\begin{example}
+    用不动点迭代法求解方程组
+    $$\left\{\begin{array}{lr}
+        x_1^2-10x_1+x_2^2+8=0\\
+        x_1x_2^2+x_1-10x_2+8=0
+    \end{array}\right.$$
+    
+    解：将原方程组转化为$x=\phi(x)$的形式，其中$x=\left[\begin{matrix}
+        x_1\\x_2
+    \end{matrix}\right], \phi(x)=\left[\begin{matrix}
+        \phi_1(x)\\ \phi_2(x)
+    \end{matrix}\right]=\left[\begin{matrix}
+        \frac{x_1^2+x_2^2+8}{10} \\ \frac{x_1x_2^2+x_1+8}{10}
+    \end{matrix}\right], \therefore x^{(k+1)}=\phi(x^{(k)}), k=0,1,2,\dots $
+
+    设$D=\{(x_1,x_2)|0\le x_1, x_2\le 1.5 \}$易证$0.8\le \phi_1(x)\le 1.25, 0.8\le \phi_2(x)\le 1.2875 \therefore \phi(x)\in D $(映内性)\\
+    $\forall x, y \in D$，有
+    \begin{equation*}
+        \left\{
+            \begin{array}{lr}
+                |\phi_1(x)-\phi_1(y)|=\frac{|y_1^2-x_1^2+y_2^2-x_2^2|}{10}\le \frac{3}{10}(|y_1-x_1|+|y_2-x_2|)=\frac{3}{10}||x-y||_1 \\
+                |\phi_2(x)-\phi_2(y)|=\frac{|y_1y_2^2-x_1x_2^2+y_1-x_1|}{10}\le \frac{4.5}{10}||x-y||_1
+            \end{array}
+            \right.
+    \end{equation*}
+    $\therefore ||\phi(x)-\phi(y)||=||\phi_1(x)-\phi_1(y)||+||\phi_2(x)-\phi_2(y)||\le \frac{7.5}{10}||x-y||_1$(压缩性)\\
+    $\therefore$迭代序列收敛。
+
+    取$x^{(0)}=(0,0)^T $，则$x^{(1)}=(0.8, 0.8)^T, x^{(2)}=(0.928, 0.9312)^T, \dots x^{(6)}=(0.99938, 0.99932)^T, x^*=(1,1)^T$
+    $$\phi^{'}(x)= \left[\begin{matrix}
+        \frac{1}{5}x_1 & \frac{1}{5} x_2 \\
+        \frac{x_2^2+1}{10} & \frac{x_1x_2}{5}
+    \end{matrix}\right], \therefore \phi^{'}(x^*)=\left[\begin{matrix}
+        0.2 & 0.2 \\
+        0.2 & 0.2
+    \end{matrix}\right] $$
+    $\therefore ||\phi^{'}(x^*) ||_1=0.4<1 \therefore \rho(\phi^{'}(x^*)\le ||\phi^{'}(x^*)||_1<1 )$\\
+    $\therefore \{x^{(k)} \}$收敛
+\end{example}
+
+\subsection{Newton迭代法}
+$x_{k+1}=x_k-\frac{f(x)}{f^{'}(x)} $推广到方程组：
+\begin{equation}
+    x^{(k+1)}=x^{(k)}-[F^{'}(x^{(k)})]^{-1}F(x^{(k)}) , k=0,1,2,\dots
+    \label{eq:5.7}
+\end{equation}
+将\ref{eq:5.7}改写成如下形式：
+\begin{equation*}
+    \begin{array}{lr}
+        F^{'}(x^{(k)})(x^{(k+1)}-x^{(k)})=-F(x^{(k)})\\
+        F^{'}(x^{(k)})\Delta x^{(k)}=-F(x^{(k)}) \\
+        x^{(k+1)}=x^{(k)}+\Delta x^{(k)}
+    \end{array}
+    ,k=0,1,2,\dots
+\end{equation*}
+
+\begin{example}
+    $$\left\{
+        \begin{array}{lr}
+            x_1^2-10x_1+x_2^2+8=0\\
+            x_1x_2^2+x_1+10x_2+8=0
+        \end{array}\right.
+        $$
+    
+    解：
+    $$F^{'}(x)=\left[\begin{matrix}
+        2x_1-10 & 2x_2 \\
+        x_2^2+1 & 2x_1x_2+10
+    \end{matrix}\right] $$
+    取$x^{(0)}=(0, 0)^T $由$F^{'}(x^{(k)})\Delta x^{(0)}=-F(x^{(0)})\Rightarrow \Delta x^{(0)}=\left[\begin{matrix}
+        0.8 \\ 0.88
+    \end{matrix}\right] $\\
+    $\therefore x^{(1)}=x^{(0)}+\Delta x^{(0)}=(0.8, 0.88)^T, \dots, x^{(4)}=(1.000, 1.000)^T $
+\end{example}
+
+\begin{theorem}
+    设$F:D\subset R^n\rightarrow R^n, F(x^*)=0, F(x)$在$x^*$的开邻域$S_0\subset D$上可导，且$F^{'}(x) $连续，$[F^{'}(x^*)]^{-1}\exists$，则：
+    \begin{enumerate}
+        \item 存在闭球$\bar{S_r^{'}}=\{x|||x-x^*||\le r, r>0\}\subset S_0, \forall x^{(0)}\subset \bar{S_r^{'}} $，
+            由$x^{(k+1)}=x^{(k)}-[F^{'}(x^{(k)})]^{-1}F(x^{(k)}) $产生的$x^{(k)}\in \bar{S_r^{'}}, k=0,1,2,\dots$(数学归纳法证明)
+        \item $\lim_{k\rightarrow\infty} x^{(k)}=x^*$(局部收敛性，$\rho(\phi^{'}(x^*)<1$或某种从属范数<1)
+        \item 若存在常数$k>0, s.t. ||F^{'}(x)-F^{'}(x^*) ||\le K||x-x^*||, \forall x \in \bar{S_r^{'}}$，则$\{x^{(k)} \}$至少平方收敛。($||x^{(k+1)}-x^{(k)}||\le C||x^{(k)}-x^*||^2$)
+    \end{enumerate}
+\end{theorem}
+
+\subsection{拟Newton法与Broyden方法}
+将\ref{eq:5.7}中的$[F^{'}(x^{(k)})]^{-1} $用$A_k^{-1} $代替，则
+\begin{equation}
+    x^{(k+1)}=x^{(k)}-A_k^{-1}F(x^{(k)}), k=0,1,2
+    \label{eq:5.8}
+\end{equation}
+$f^{'}(x^{(k)})(x_k-x_{k-1})\approx f(x_k)-f(x_{k-1}) $，由此分析得：
+\begin{align}
+    &A_{k+1}(x^{(k+1)}-x^{(k)})=F(x^{(k+1)})-F(x^{(k)}) \label{eq:5.9}\\
+    &A_{k+1} = A_k+\Delta A_k, rank(\Delta A_k)=m\ge 1 \label{eq:5.10}
+\end{align}
+
+由(\ref{eq:5.8})(\ref{eq:5.9})(\ref{eq:5.10})组成的迭代法称为拟Newton方法。
+
+若$m=1$，则
+\begin{equation}
+    \Delta A_k=u^{(k)}[v^{(k)}]^T, u^{(k)},v^{(k)}\in R^n 
+    \label{eq:5.11}
+\end{equation}
+记$S^{(k)}=x^{(k+1)}-x^{(k)}, y^{(k)}=F(x^{(k+1)})-F(x^{(k)}) $，则\ref{eq:5.9}可写成
+\begin{equation}
+    A_{k+1}S^{(k)}=y^{(k)} 
+    \label{eq:5.12}
+\end{equation}
+由(\ref{eq:5.11})(\ref{eq:5.12})得
+\begin{equation*}
+    \begin{array}{lr}
+        \{A_k+u^{(k)}[v^{(k)}]^T \}S^{(k)}=y^{(k)} \Rightarrow \\
+        u^{(k)}[v^{(k)}]^TS^{(k)} = y^{(k)}-A_kS^{(k)} \Rightarrow \\
+        u^{(k)} = \frac{1}{[v^{(k)}]^TS^{(k)}}(y^{(k)}-A_kS^{(k)}), [v^{(k)}]^TS^{(k)}\neq 0
+    \end{array}
+\end{equation*}
+将$u^{(k)}$代入$\Delta A_k$有：
+$$\Delta A_k = \frac{y^{(k)}-A_kS^{(k)}}{[v^{(k)}]^TS^{(k)}}[v^{(k)}]^T$$
+选取$v^{(k)}=S^{(k)} $，则有$\Delta A_k = \frac{y^{(k)}-A_kS^{(k)}}{[S^{(k)}]^TS^{(k)}}[S^{(k)}]^T$
+
+$A_0=I, A_{k+1}=A_k+\Delta A_k $由此可得秩1拟Newton法如下：
+\begin{align}
+    x^{(k+1)}&=x^{(k)}-A^{-1}_kF(x^{(k)}) \\
+    A_{k+1}&=A_k + (y^{(k)}-A_kS^{(k)})\frac{[S^{(k)}]^T}{[S^{(k)}]^TS^{(k)}}
+\end{align}
+
+
+\end{document}

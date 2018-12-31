@@ -1,0 +1,223 @@
+%!TEX program=xelatex
+
+\documentclass[a4paper]{article}
+
+\usepackage{amsmath}
+\newtheorem{definition}{定义}[section]
+\newtheorem{theorem}{定理}[section]
+\newtheorem{lemma}{引理}
+\newtheorem{proof}{证明}
+\newtheorem{example}{例}[section]
+
+\makeatletter % `@' now normal "letter"
+\@addtoreset{equation}{section}
+\makeatother  % `@' is restored as "non-letter"
+\renewcommand\theequation{\oldstylenums{\thesection}%
+                   .\oldstylenums{\arabic{equation}}}
+
+
+\usepackage{ctex}
+\usepackage{amssymb}
+\usepackage{tabularx}
+\usepackage{multicol}
+\usepackage{multirow}
+\usepackage{booktabs}
+\usepackage{hyperref}
+
+\title{第一章\ 引论}
+\setlength{\parindent}{0cm}
+
+\begin{document}
+\maketitle
+\section{内容}
+1. 数值分析的研究对象 \\
+2. 数值计算的误差 \\
+3. 病态问题、数值稳定性与避免误差的原则 \\
+
+\section{参考文献}
+《数值计算原理》  教材 \\
+《数值分析基础》、《数值分析》、《工程中的数值方法》、《现代数值分析》
+
+\section{数值分析的研究对象}
+函数的插值和逼近、数值积分与微分 \\
+线性代数方程组的数值解法 \\
+非线性方程组的数值解法 \\
+常微分方程的数值解法 \\
+矩阵特征值的数值解法 \\
+
+\section{数值计算的误差}
+\subsection{误差的来源与分类}
+观测误差、舍入误差、截断误差 \\
+观测误差：$\pi$ \\
+截断误差：函数泰勒展开，$f(x) \approx f(0) + f(x) + \cdots + \frac{f^n(0)}{n!}x^n$ \\
+误差：$\frac{f^{n+1}(\xi)}{(n+1)!}x^{n+1}$
+
+\subsection{误差和有效数字}
+\begin{definition}
+假设x是某个实数的精确值，$x^*$是它的一个近似值。则称$e=x-x^*$为近似值$x^*$的绝对误差或简称误差。称$e_r=\frac{x-x^*}{x}$为$x^*$的相对误差，或$e_r=\frac{x-x^*}{x^*}$。
+\end{definition}
+
+\begin{definition}
+设$x$是某实数的精确值，$x^*$是它的一个近似值，并且$|x-x^*| \le \varepsilon(x^*) $，则称$\varepsilon(x^*)$是$x^*$的绝对误差界或简称误差界。称$\frac{\epsilon(x^*)}{|x^*|}$为$x^*$的相对误差界，记为：\\
+\centerline{ $\varepsilon_{r}(x^*)=\frac{\varepsilon(x^*)}{|x^*|}$}
+\end{definition}
+
+\begin{definition}
+设$x^*$是x的一个近似值，写成
+\begin{equation}
+\label{eq2.1}
+x^*=\pm 10^k * 0.a_{1}a_{2} \dots a_{n} \dots 
+\end{equation}
+其中$a^i \neq 0$，k为整数。若$|x-x^*| \le \frac{1}{2}*10^{k-n}$，则称$x^*$具有$n$位有效数字。\\
+\end{definition}
+
+\begin{example}
+对$\pi$的不同近似的有效位数：\\
+用 $3.14$近似$\pi$：$\because |\pi-3.14| \le 0.002 < \frac{1}{2}*10^{1-3}$ \\
+用 $3.14285$近似$\pi$：$\because |\pi-3.14285| \dots $ 有效数字仍是3位。\\
+\end{example}
+\begin{example}
+按四舍五入原则写出下列各数具有5位有效数字的近似数：\\
+$187.9325 -> 187.93$ \quad $0.03785551 -> 0.037856$ \\
+$8.000033 -> 8.0000$ \quad $2.7182818 -> 2.7183$ \\
+\end{example}
+
+\begin{theorem}
+设x的近似值$x^*$有\ref{eq2.1}的表达式，\\
+（1）若$x^*$有n位有效数字，则：
+\begin{equation}
+\frac{|x-x^*|}{|x^*|} \le \frac{1}{2a_1}*10^{1-n}
+\end{equation}
+（2）若$\frac{|x-x^*|}{|x^*|} \le \frac{1}{2a_1+1}*10^{1-n}$，则$x^*$至少具有n位有效数字。
+\end{theorem}
+
+\subsection{求函数值和算数运算的误差估计}
+\begin{equation}
+|f(x)-f(x^*)| \le |f^{'}(x^*)||x-x^*|+\frac{1}{2}|f^{''}(\xi)||x-x^*|^2
+\end{equation}
+若$f^{'}(x^*) \neq 0$，且$f{''}(\xi)$与$f{'}(x^*)$相比不太大，则上式即可忽略第二项，由此可得到函数值$f(x^*)$的一个近似误差界，为
+\begin{equation}
+\varepsilon(f(x^*)) \approx |f^{'}(x^*)||x-x^*|
+\end{equation}
+近似地，
+\begin{equation}
+|f(x)-f(x^*)| \le \varepsilon(f(x^*)) \approx |f^{'}(x^*)||x-x^*| \le |f^{'}(x^*)|\varepsilon(x^*)
+\end{equation}
+\begin{equation}
+\varepsilon_r (f(x^*))=\frac{\varepsilon(f(x^*))}{|f(x^*)|}
+\end{equation}
+近似的有：
+\begin{equation}
+|f(x_1, x_2, \dots, x_n)-f(x_1^*,x_2^*, \dots, x_n^*)| \le \sum_{k=1}^{n}|\frac{\partial f(x_1^*,x_2^*, \dots, x_n^*)}{\partial x_k}||x_k-x_k^*|
+\end{equation}
+多元函数计算的误差界为：
+\begin{equation}
+\begin{split}
+\varepsilon(f(x_1^*,x_2^*, \dots, x_n^*)) 
+& \approx \sum_{k=1}^{n}|\frac{\partial f(x_1^*,x_2^*, \dots, x_n^*)}{\partial x_k}||x_k-x_k^*|  \\
+& \le \sum_{k=1}^{n}|\frac{\partial f(x_1^*,x_2^*, \dots, x_n^*)}{\partial x_k}|*\varepsilon(x_k^*)
+\end{split}
+\end{equation}
+相对误差界
+\begin{equation}
+\varepsilon_r(f(x_1^*,x_2^*, \dots, x_n^*)) = \frac{\varepsilon(f(x_1^*,x_2^*, \dots, x_n^*))}{|f(x_1^*,x_2^*, \dots, x_n^*)|}
+\end{equation}
+
+两个近似值的算术运算，其误差界估计：
+\begin{equation}
+\varepsilon(x_1^* \pm x_2^*)=\varepsilon(x_1^*) + \varepsilon(x_2^*)
+\end{equation}
+\begin{equation}
+\varepsilon_r(x^*_1 \pm x^*_2) = \frac{\varepsilon(x_1^*) + \varepsilon(x_2^*)}{|x^*_1 \pm x^*_2|}
+\end{equation}
+\begin{equation}
+\varepsilon(x^*_1 * x^*_2) \approx |x^*_2|\varepsilon(x_1^*) + |x^*_1|\varepsilon(x_2^*)
+\end{equation}
+\begin{equation}
+\varepsilon_r(x^*_1 * x^*_2) \approx \frac{\varepsilon(x^*_1)}{|x^*_1|} + \frac{\varepsilon(x_2^*)}{|x_1^*|} = \varepsilon_r(x_1^*) + \varepsilon_r(x^*_2)
+\end{equation}
+\begin{equation}
+\varepsilon(x^*_1 / x^*_2) \approx \frac{\varepsilon(x^*_1)}{|x^*_2|} + \frac{|x^*_1|}{|x^*_2|}\varepsilon(x^*_2)
+\end{equation}
+\begin{equation}
+\varepsilon_r(x^*_1 / x^*_2) \approx \frac{\varepsilon(x^*_1)}{|x^*_1|} + \frac{\varepsilon(x^*_2)}{|x^*_2|} = \varepsilon_r(x_1^*) + \varepsilon_r(x^*_2)
+\end{equation}
+
+注：以上公式都可由构造简单二元函数利用多元函数误差界公式，做泰勒展开求得。简单证明如下：\\
+$|f(x_1, x_2) - f(x^*_1, f^*_2)|=|x_1x_2-x^*_1*x^*_2|\le \varepsilon(x^*_1x^*_2)$
+
+\section{病态问题、数值稳定性与避免误差的原则}
+
+\subsection{病态问题与条件数}
+
+\begin{definition}
+设$x^*$为自变量$x$的近似值，则称\\
+$\frac{\frac{f(x)-f(x^*)}{f(x)}}{\frac{x-x^*}{x}} \approx |\frac{xf^{'}(x)}{f(x)}| := C(x) = Cond(f(x))$ \\
+为计算函数值问题的条件数。
+\end{definition}
+
+\subsection{数值方法的稳定性}
+\begin{example}
+计算$I_n=\int^{1}_{0}\frac{x^n}{x+5}dx, n=0,1,2,\dots$ \\
+解：$\because I_n + 5 I_{n-1} = \int^1_0x^n-1=\frac{1}{n}$ \\
+\begin{equation}
+\label{eq3.2}
+\therefore I_n = -5I_{n-1} + \frac{1}{n}, n=0, 1, 2, \dots 
+\end{equation}
+显然 $I_0=ln6-ln5$ \quad $I^{'}_n=-5I_{n-1}^{'}+\frac{1}{n}$ \\
+$E_n = I_n - I^{'}_n = -t(I_{n-1}-I_{n-1}^{'}) = -5 E_{n-1} = \dots = (-5)^nE_0$
+由(\ref{eq3.2})可得，
+\begin{equation}
+\label{eq3.4}
+I_{n-1}=-\frac{1}{5}I_n + \frac{1}{5n}, n=k, k-1, ..., 1
+\end{equation}
+$\because \frac{1}{6(k+1)}=\int^1_0\frac{x^k}{6}dx<I_k=\int^1_0\frac{x^k}{x+5}dx<\int^1_0\frac{x^k}{5}dx=\frac{1}{5(k+1)}$，
+$I_k \approx \frac{1}{2}[\frac{1}{6(k+1)} + \frac{1}{5(k+1)}]$，取$k=6, I^{'}_6=0.0262$ \\
+$\because E_k = (-5)E_{k-1}=\cdots = (-5)^mE_(k-m), m=1,2, \dots, k$ \\
+$\therefore E_{k-m}=(-\frac{1}{5})^mE_k, m=1, 2, \dots, k$ \\
+若取$k=6$，则$E_0=(-\frac{1}{5})^6E_6$，$\therefore |E_0|=(1/5)^6|E_6|$
+
+\begin{table}[htb]
+\centering
+\begin{tabular}{c c c c}
+ \toprule[1.5pt]
+ $n$ & 按(\ref{eq3.2})计算 & 按(\ref{eq3.4})计算& $I_n$准确值（4位）\\
+ \midrule[0.8pt]
+ 0 & 0.1823 & 0.1823 & 0.1823 \\
+ 1 & 0.0885 & 0.0884 & 0.0884 \\
+ 2 & 0.0575 & 0.0580 & 0.0580 \\
+ \dots & \dots & \dots & \dots \\
+ 5 & 0.0950 & 0.0281 & 0.0285 \\
+ 6 & -0.3083 & 0.0262 & 0.0243\\ 
+ \bottomrule[1.5pt]
+\end{tabular}
+\end{table}
+
+\end{example}
+
+\begin{definition}
+如果初始数据有误差，而在计算过程中误差得到控制，则称数值方法是稳定的，否则称该方法是不稳定的或称为发散的。
+\end{definition}
+
+
+数值计算中应注意的若干准则：
+\begin{itemize}
+\item 应避免除数绝对值远远小于被除数绝对值的运算。
+\item 要避免两相近数相减，如$x=532.65, y=532.62$，$x-y = 0.03$
+\item 要防止大数“吃”小数\\
+ 如：在五位十进制计算机上计算：\\
+ $A=52492+\sum^{1000}_{i=1}r_i, 其中0.1 \le r_i \le 0.9$ \\
+ 实际上，$A=0.52492*10^5+\sum^{1000}_{i=1}r_i$
+ 若取$r_i=0.4, i = 1, 2, \dots, 1000$ \\
+\begin{equation*}
+ \begin{split}
+\therefore  A &=0.52492*10^5 + 0.000004*10^5 + \dots \\
+ &=0.52492*10^5 = 52492 \\
+ \end{split}
+\end{equation*}
+改写成，$A=\sum^{1000}_{i=1}r_i+52492=0.004*10^5+0.52492*10^5=52892$
+\item 注意简化计算步骤
+如：$x^{255}=x\cdot x^2 \cdot x^4 \cdot x^8 \cdots x^{128}$
+\end{itemize}
+
+\end{document}

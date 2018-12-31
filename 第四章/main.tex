@@ -1,0 +1,481 @@
+%!TEX program=xelatex
+\documentclass[a4paper]{article}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{ctex}
+\usepackage{hyperref}
+
+\newtheorem{definition}{定义}[section]
+\newtheorem{theorem}{定理}[section]
+\newtheorem{lemma}{引理}[section]
+\newtheorem{example}{例}[section]
+
+\makeatletter % `@' now normal "letter"
+\@addtoreset{equation}{section}
+\makeatother  % `@' is restored as "non-letter"
+\renewcommand\theequation{\oldstylenums{\thesection}%
+                   .\oldstylenums{\arabic{equation}}}
+
+
+\begin{document}
+\title{第四章——数值逼近与数值积分}
+\author{}
+\date{}
+\maketitle
+
+\section{正交多项式}
+\begin{definition}
+    内积：（两个函数内积）设$f,g \in [a,b], \rho(x)$为权函数，称$(f, g) = \int^b_a\rho(x)f(x)g(x)dx$为函数f和g在$[a,b]$上带权$\rho$的内积。
+\end{definition}
+
+\begin{definition}
+    正交：设$f,g\in C[a,b]$，$\rho$为权函数，若$(f,g)=0$，则称f与g在$[a,b]$上带权$\rho$正交。
+\end{definition}
+
+\begin{definition}
+    正交多项式：设$\phi_n$是$[a,b]$上首项系数$a_n\neq 0$的n次多项式，$\rho(x)$为$[a,b]$上权函数，若多项式序列$\phi_0, \phi_1, \dots, \phi_n$满足：
+    $$(\phi_i, \phi_j)=\int^b_a\rho(x)\phi_i(x)\phi_j(x)dx = \left\{\begin{array}{lr}
+        0, i\neq j \\ A_j > 0, i=j
+    \end{array}\right.$$则称$\phi_0, \phi_1, \dots, \phi_n$为$[a,b]$上带权$\rho(x)$正交，并称$\phi_n(x)$为$[a,b]$上带$\rho(x)$的n次正交多项式。
+\end{definition}
+
+\subsection{Gram-Schmidt方法}
+用Gram-Schmidt正交化方法构造$[a,b]$上带权$\rho(x)$的正交多项式\textbf{（重点）}:
+\begin{align*}
+    &\phi_0(x) = 1\\
+    &\phi_1(x) = x - \alpha_1 \\
+    &\phi_k(x) = (x-\alpha_k)\phi_{k-1}(x) - \beta_k\phi_{k-2}(x), k=2,3,\dots
+\end{align*}
+其中：$\alpha_k = \frac{(x\phi_{k-1}, \phi_{k-1})}{(\phi_{k-1}, \phi_{k-1})}, \beta_k = \frac{(\phi_{k-1}, \phi_{k-1})}{(\phi_{k-2}, \phi_{k-2})}$
+
+\subsection{正交多项式性质}
+\begin{enumerate}
+    \item $\phi_k(x)$是最高次数项系数为1的多项式。
+    \item $\phi_0, \phi_1, \dots, \phi_n$在$[a,b]$上带权$\rho(x)$正交
+    \item 区间$[a,b]$上关于权函数$\rho(x)$，正交多项式$\phi_0, \phi_1, \dots, \phi_n$必定\textit{线性无关}。
+    \item 任意k次多项式均可表示为前k+1个$\phi_0, \phi_1, \dots, \phi_k$的线性组合$P_k(x) = c_o\phi_0 + c_1\phi_1 + \dots + c_k\phi_k$
+\end{enumerate}
+
+\begin{theorem}
+    设$\{\phi_k, k\ge 0\}$是$[a,b]$上带权$\rho(x)$的正交多项式序列，则n次多项式$\phi_n(x)$在$(a,b)$内恰有n个不同的实零点（$\phi_n(x_i)=0, i=1,2, \dots, n$，即$\phi_n(x) = a_n(x-x_1)(x-x_2)\cdots(x-x_n)$）。
+\end{theorem}
+
+\subsection{常见的多项式}
+\subsubsection{Legendre多项式}
+表达式：
+\begin{equation}
+    \left\{
+        \begin{array}{lr}
+            P_0(x) = 1 \\
+            P_n(x) = \frac{1}{2^nn!}\frac{d^n}{dx^n}\{(x^2-1)^n\}
+        \end{array}
+        \right.
+\end{equation}
+
+性质：
+\begin{enumerate}
+    \item 正交性: 
+    $$\int^1_{-1}P_n(x)P_m(x)dx = \left\{
+        \begin{array}{lr}
+            0, n\neq m \\
+            \frac{2}{2n+1}, n = m
+        \end{array}
+        \right.$$
+        i.e. Legendre多项式序列$P_0, P_1, \dots, P_n$是$[-1,1]$上带权$\rho(x)=1$的正交多项式序列。
+    \item 奇偶性：$P_n(-x) = (-1)^nP_n(x)$
+    \item 递推关系：$(n+1)P_{n+1}(x) = (2n+1)xP_n(x) - nP_{n-1}(x), n=0,1,2,\dots$
+    \item $P_n(x)$在$(-1,1)$内有n个不同的实零点$P_n(x) = a_n(x-x_1)(x-x_2)\cdots(x-x_n)$
+\end{enumerate}
+
+Legendre多项式首项系数：$a_n = \frac{(2n)!}{2^n(n!)^2}$，从表达式易知。
+
+\subsubsection{切比雪夫(Chebyshev)多项式}
+对于$x\in [-1, 1]$，称n次多项式:
+\begin{equation}
+    T_n(x) = cos(n arc cos x), n = 0, 1, 2, \dots 
+\end{equation}
+为chebyshev多项式。
+
+性质：
+\begin{enumerate}
+    \item 正交性：
+    $$\int^1_{-1} \frac{T_n(x)T_m(x)}{\sqrt{1-x^2}}dx = \left\{
+        \begin{array}{lr}
+            0, n \neq m \\
+            \frac{\pi}{2}, n=m \neq 0 \\
+            \pi, n=m=0
+        \end{array}
+        \right. $$
+        i.e. Chebyshev多项式在$[-1,1]$上带权$\rho(x) = \frac{1}{\sqrt{1-x^2}}$正交
+    \item 递推关系：$T_{n+1}(x) =2xT_n(x)-T_{n-1}(x), n=1,2,\dots $
+    \item 奇偶性：$T_n(-x) = (-1)^nT_n(x) $
+    \item $T_n(x)$在$(-1,1)$上有n个不同的实零点；$x_k = cos\frac{(2k-1)\pi}{2n}, k=1,2,\dots,n$
+    \item $T_n$的首项系数是$a_n = 2^{n-1},n=1,2,\dots$
+    \item 任意n次多项式均可表示成$T_0, T_1, \dots, T_n$的线性组合：$P_n(x) = c_oT_0 + c_1T_1 + \dots + c_nT_n$      
+\end{enumerate}
+
+由性质1和性质6可知：
+$$\int^1_{-1}\frac{P_k(x)T_n(x)}{\sqrt{1-x^2}}dx = 0, k < n$$
+
+\section{最小二乘拟合}
+
+\subsection{线性最小二乘拟合}
+已知一组数据$(x_i, f_i), i=0,1,\dots, m$，要求在函数类$\Phi = span\{\phi_0, \phi_1, \dots, \phi_n\}$中找到一个函数$S(x)$
+使得
+\begin{equation}
+    \sum^m_{j=0}\rho(x_j)[S^*(x_j)-f_j]^2=min_{S(x)\in\Phi}\sum^m_{j=0}\rho(x_j)[S(x_j)-f_j]^2 
+\end{equation}
+其中$S(x)=a_0\phi_0(x)+\dots + a_n\phi_n(x)$，这就是线性最小二乘曲线拟合
+
+\begin{equation*}
+    F(a_0, a_1, \dots, n) = \sum^m_{j=0}\rho(x_j)[S(x_j)-f_i]^2 = \sum^m_{j=0}\rho(x_j)[\sum^n_{i=0}a_i\phi_i(x_j)-f_j]^2
+\end{equation*}
+令$\frac{\partial F}{\partial a_i} = 0, i=0,1,\dots, n$则有：
+\begin{equation}
+    \frac{\partial F}{\partial a_k} = 2\sum^m_{j=0}\rho(x_j)[\sum^n_{i=0}a_i\phi_i(x_j)-f_j]\phi_k(x_j) = 0  
+    \label{eq:2.2}
+\end{equation}
+
+\noindent 定义$(\phi_k, \phi_i) = \sum^m_{j=0}\rho(x_j)\phi_k(x_j)\phi_i(x_j) $为$\phi_k(x_j)$和$\phi_i(x_j)$在离散点集$X = \{x_0, x_1, \dots, x_m\}$上带权$\rho(x_j)$的内积，则\ref{eq:2.2}可写为：
+\begin{equation}
+    \sum^n_{i=0}(\phi_k, \phi_i)a_i = d_k, k = 0,1,\dots, n
+    \label{eq:2.3}
+\end{equation}
+其中$d_k=(f, \phi_k)$，称\ref{eq:2.3}为法方程，或写成如下矩阵形式：
+$$Ga=d$$
+其中$a=(a_0, a_1, \dots, a_n)^T$，$d=(d_0, d_1, \dots, d_n)^T$，
+$$G = \left[
+    \begin{matrix}
+        (\phi_0, \phi_0) & (\phi_0, \phi_1) & \dots & (\phi_0, \phi_n) \\
+        (\phi_1, \phi_0) & (\phi_1, \phi_1) & \dots & (\phi_1, \phi_n) \\
+        \vdots & \dots & \dots & \vdots \\
+        (\phi_n, \phi_0) & (\phi_n, \phi_1) & \dots & (\phi_n, \phi_n)
+    \end{matrix}
+    \right]$$
+
+\begin{definition}
+    设$\phi_0, \phi_1, \dots, \phi_n\in [a,b]$的任意线性组合在$X=\{x_0, x_1, \dots, x_m\}(m\ge n)$上至多只有n个不同的零点，则称
+    $\phi_0, \phi_1, \dots, \phi_n$在X上满足Haar条件
+\end{definition}
+
+\begin{theorem}
+    若$\phi_0, \phi_1, \dots, \phi_n$在$X=\{x_0, x_1, \dots, x_m\}$上满足Harr条件，则$\phi_0, \phi_1, \dots, \phi_n$在x上线性无关，且法方程\ref{eq:2.3}的系数矩阵G非奇异。
+\end{theorem}
+
+\subsection{非线性最小二乘拟合}
+\begin{example}
+    \textbf{重点}若已知$(x_i, f_i), i=0,1,\dots, m$，且其分布近似于指数曲线，则可考虑用指数函数$S=be^{ax}$去拟合数据。
+    
+    为此，首先给出$F(a,b)=\sum^m_{i=0} (f_i-be^{ax_i})^2 $
+    则可令$\frac{\partial F}{\partial a} = \frac{\partial F}{\partial b}=0, \Rightarrow \left\{
+    \begin{array}{lr}
+        \sum^m_{j=0}[f_j-be^{ax_j}]e^{ax_j}=0 \\
+        \sum^m_{j=0}[f_j-be^{ax_j}]be^{ax_j}=0
+    \end{array}    
+     \right. $
+     
+     由 $S=be^{ax} $可得：$lnS(x)=lnb+ax $令:$z=lnS(x), \beta=lnb$则$z=\beta + ax$，选取$\Phi = span{1, x}, i.e. \phi_0(x)=1, \phi_1(x)=x$
+
+     已知 $x = \{1, 1.25, 1.5, 1.75, 2\}, f = \{5.1, 5.79, 6.53, 7.45, 8.46\}$，则$lnf =\{1.629, 1.756, 1.876, 2.008, 2.135\} $ 则
+     $(\phi_0, \phi_0) = 5, (\phi_0, \phi_1) = 7.5, (\phi_1, \phi_1) = 11.875, d_0 = (\phi_0, lnf) = 9.404, d_1=(\phi_1, lnf) = 14.422$
+
+     则有如下法方程：
+     $$\left[
+         \begin{matrix}
+             5 & 7.5 \\
+             7.5 & 11.875 
+         \end{matrix}
+         \right]\left[
+             \begin{matrix}
+                 \beta \\ \alpha 
+             \end{matrix}
+             \right]=
+             \left[
+                 \begin{matrix}
+                     9.404 \\ 14.442
+                 \end{matrix}
+                 \right]$$
+    
+    得到：$\beta = 1.122, \alpha = 0.5056 \Rightarrow b = e^\beta \approx 3.07$，$\therefore S^*(x)=3.07e^{0.5056x} $
+\end{example}
+
+其他形式：$S(x) = \frac{1}{a_0+a_1x}$可转换为：$\frac{1}{S(x)} = a_0+a_1x$
+
+\subsection{正交多项式最小二乘拟合}
+如果能选取$\phi_0, \phi_1, \dots, \phi_n$关于点集$X=\{x_0, x_1, \dots, x_m\}$上带数$w_i, i=0,1,\dots, m$正交的函数族，i.e.$(\phi_j, \phi_k)=\sum^m_{i=0}w_i\phi_j(x_j)\phi_k(x_i)=\left\{
+    \begin{array}{lr}
+        0, i\neq k \\
+        A_j > 0 , k=j
+    \end{array}
+    \right. $，则法方程变为：
+    $$(\phi_k, \phi_k)a_k = d_k, k=0,1,\dots, n$$
+    $$\Rightarrow a^*_k=(f,\phi_k)/(\phi_k, \phi_k) = \sum^m_{j=0}w_jf_j\phi_k(x_j)/\sum^m_{j=0}w_j\phi_k^2(x_j) $$
+
+\section{插值}
+\begin{definition}
+    插值：就是寻找一个便于计算的简单函数$\phi(x)$使得其满足$\phi(x_j)=f(x_j), j=0,1,\dots, n$并以$\phi(x)$作为$f(x)$的近似值，称$\phi(x)$为插值函数，$f(x)$为被插函数。
+\end{definition}
+
+\subsection{Lagrange插值}
+在多项式函数空间$P_n=span\{1,x,\dots, x^n\}$中寻找某一插值函数$L_n(x) $满足下列插值条件：
+\begin{equation}
+    L_n(x_j)=f(x_j), i=0,1,\dots, n 
+    \label{eq:*}
+\end{equation}
+其中$L_n(x) = a_0 + a_1x + \dots+ a_nx^n$，由\ref{eq:*}式可以确定插值函数：$L_n(x)=a_0^* + a_1^*x + \dots+ a_n^*x^n $，其中$a_i^*(i=0,1,\dots, n)$为\ref{eq:*}式的解。
+
+构造给出满足\ref{eq:*}的$L_n(x) $，选下列基函数：
+\begin{equation}
+    \begin{split}
+        &l_i(x) = \frac{(x-x_0)\cdots(x-x_{i-1})(x-x_{i+1})\cdots(x-x_n)}{(x_i-x_0)\cdots(x_i-x_{i-1})(x_i-x_{i+1})\cdots(x_i-x_n)}\\
+    =&\prod^n_{\substack{j=0\\j\neq i}}\frac{x-x_j}{x_i-x_j}
+    \end{split}
+\end{equation}
+其满足：$l_i(x_k) = \left\{\begin{array}{lr}
+    0, i\neq k \\ 1, i= k
+\end{array}\right.$
+则令：
+\begin{equation}
+    L_n(x) = \sum^n_{i=0}l_i(x)f(x_i)
+\end{equation}
+于是可证：$L_n(x_j)=f(x_j), j=0,1,\dots, n $
+称$R(x)=f(x)-L_n(x) $为插值多项式的余项（$R(x_j)=0$）。插值余项：
+$$R(x) = f(x)-L_n(x)=\frac{f^{(n+1)}(\xi)}{(n+1)!}w_{n+1}(x) $$
+其中$\xi \in (a,b), w_{n+1}(x)=\prod^n_{j=0}(x-x_j) , \Rightarrow f(x)=L_n(x)+R(x) $，$[a,b]$为插值区间。
+
+\subsection{Newton插值}
+若选取基函数$\phi_0(x)=1, \phi_1(x)=(x-x_0), \dots, \phi_k(x)=(x-x_0)(x-x_1)\dots(x-x_k) $，则Newton插值多项式可写为：$P(x)=a_0+a_1(x-x_0)+\dots+a_n(x-x_0)(x-x_1)\cdots(x-x_{n-1}) $，则由插值条件：
+$P(x_j)=f(x_j),j=0,1,\dots, n $即可确定$a_j, j=0,1,\dots, n, i.e. a_0=P(x_0)=f(x_0) $.
+\begin{align*}
+    &a_0 = P(x_0) = f(x_0)\\
+    &P(x_1)=a_0+a_1(x_1-x_0) = f(x_1) \\
+    &P(x_2)=a_0+a_1(x_2-x_0)+a_n(x_2-x_0)(x_2-x_1) =f(x_2) \\
+    &\dots \\
+    &P(x_n)=a_0+a_1(x_n-x_0)+\dots+a_n(x_n-x_0)(x_n-x_1)\cdots(x_n-x_{n-1}) 
+\end{align*}
+用差商表示：
+\begin{align*}
+    &a_0=f(x_0), a_1 = \frac{f(x_1)-f(x_0)}{x_1-x_0}=f[x_0, x_1]  \\
+    &a_2 = \frac{f[x_0, x_2]-f[x_0, x_1]}{x_2-x_1} = f[x_0, x_1, x_2] \\
+    &\dots \\
+    &a_k = f[x_0, x_1, \dots, x_k]
+\end{align*}
+由此可得Newton插值多项式：
+\begin{equation}
+    \rho(x) = f(x_0)+f[x_0,x_1](x-x_0) + \dots + f[x_0, x_1, dots, x_n](x-x_0)\cdots(x-x_{n-1})
+\end{equation}
+注：Newton法的优势在于若新增节点，只需要计算新增的一项。
+
+\begin{align*}
+    R(x) = f(x)-P(x) \\
+    H_n = span\{\phi_0, \dots, \phi_n\}
+\end{align*}
+
+\subsection{三次样条插值}
+$$
+R(x) = f(x)-L_n(x) = \frac{f^{(n+1)}(\xi)}{(n+1)!}w_{n+1}(x)
+$$
+若$f(x)=\frac{1}{1+x^2}$：随着插值节点增加，R(x)越来越大。
+
+龙格现象？高次插值中易出现。随着节点增加无法改进。因此需要低次插值方法。
+
+\begin{definition}
+    设$[a,b]$上一个剖分：$\Delta: a=x_0<x_1<\dots<x_n=b$如果函数$S(x)$满足下列条件：
+    \begin{enumerate}
+        \item $S(x) \in C^n[a,b] $
+        \item $S(x)$在每个子区间$[x_{i-1}, x_i],i=1,2,\dots, n$是3次多项式
+    \end{enumerate}
+    则称$S(x)$是关于节点剖分$\Delta$的三次样条函数
+    
+    若再给定$f(x)\in [a,b] $在节点上的值$f(x_j) $并使得$S(x_j)=f(x_j),j=0,1,\dots,n $则称$S(x) $为$f(x)$的三次样条插值函数。
+\end{definition}
+
+$S(x): [x_0, x_1][x_1,x_2],\dots, [x_{n-1},x_n] $共n段，共需确定4n个参数。\\
+由$S(x)\in C^2(a,b)$有：
+\begin{equation*}
+    \left\{
+    \begin{array}{lr}
+        S(x_j-0) = S(x_j+0) \\
+        S^{'}(x_j-0) = S^{'}(x_j+0) \\
+        S^{{'}{'}}(x_j-0) = S^{{'}{'}}(x_j+0)
+    \end{array}\right.
+\end{equation*}
+由插值条件共有$4n-2$个条件。再利用边界条件可得4n个方程。
+
+边界条件的三种类型：
+\begin{itemize}
+    \item I型边界条件 $S^{'}(x_0)=f^{'}(x_0), S^{'}(x_n)=f^{'}(x_n) $
+    \item II型边界条件 $S^{{'}{'}}(x_0)=f^{{'}{'}}(x_0), S^{{'}{'}}(x_n)=f^{{'}{'}}(x_n) $\\
+        或$S^{{'}{'}}(x_0)=0, S^{{'}{'}}(x_n)=0 $，称为自然边界条件。
+    \item III型边界条件（周期样条函数条件）\\
+        $S^{(j)}(x_0)=S^{(j)}(x_n) $
+\end{itemize}
+
+考：两阶情况下，满足某种边界条件下的三次样条插值函数（给定部分参数）。
+
+\section{数值积分}
+
+定积分$\int^b_a f(x)dx=F(b)-F(a) $若无法积分，积分无意义？或者只有离散数据，不知道表达式，则需要定积分：
+\begin{equation}
+    I(f) = \int^b_af(x)dx = \lim_{max(\Delta x)\rightarrow 0}\sum^n_{i=0}f(\xi_i)\Delta x_i
+\end{equation}
+数值积分则为选取不同$\xi_i$，来使得$\sum^n_{i=0}f(\xi_i)\Delta_i \approx \int^b_af(x)dx $和真实积分之间误差尽可能小。
+i.e.$I(f)=\int^b_af(x)dx\approx \sum^n_{i=0}A_kf(x_k)$记为$I_n(f)$，其中$A_k$为求积系数，$x_k$为节点。（方法围绕如何选择$A_k, x_k$）
+
+\subsection{插值型求积公式}
+若已知节点$x_j$及其函数值$f(x_j),i=0,1,\dots, n$则可获得Lagrange插值多项式$L_n(x)=\sum^n_{k=0}l_k(x)f(x_k)$。进一步有：
+\begin{equation}
+    \begin{split}
+        I(f) \approx I_n(f) &= \int^b_aL_n(x)dx = \sum^n_{k=0}[\int^b_al_k(x)dx]f(x_k) \\
+        &= \sum^n_{k=0}A_kf(x_k)
+    \end{split}
+\end{equation}
+其中$A_k = \int^b_al_k(x)dx$\\
+误差：
+\begin{equation*}
+    \begin{split}
+        R_n(f)&=\int^b_a[f(x)-L_n(x)]dx \\
+        &=\int^b_a\frac{f^{(n+1)}(\xi)}{(n+1)!}w_{n+1}(x)dx
+    \end{split}
+\end{equation*}
+求积公式至少n阶精度。$\because $若$f(x)$为n次多项式，$f^{(n+1)}=0$，$\therefore $至少n阶精度。
+
+\begin{align}
+    &\int^b_a f(x)dx \approx \sum^n_{k=0}A_kf(x_k) \label{eq:4.1} \\
+    &R_n(f) = I(f)-I_n(f) = \int^b_a\frac{f^{(n+1)}(\xi)}{(n+1)!}w_{n+1}(x)dx
+\end{align}
+
+\subsection{求积公式的代数精度\textbf{（考点！！）}}
+
+\begin{definition}
+    \textbf{重点概念！}如果$R_n(x^m)=0, (m=0,1,\dots, k)$，则称求积公式\ref{eq:4.1}至少具有k次代数精度，如果$\exists R(x^{k+1})\neq 0$则称\ref{eq:4.1}
+    的代数精度恰为k，或若当$f(x)$为任意次数$\le k$的多项式，求积公式
+    $$\int^b_af(x)dx = \sum^n_{k=0}A_kf(x_k)$$精确成立，而对于某个$k+1$次多项式，公式不精确成立，则称求积公式洁颜油k次代数精度
+\end{definition}
+
+注：\ref{eq:4.1}的代数精度至少为n，但最多只能到$n+1$（有n+1个节点，精度上限受限于节点已给定）如果节点和插值函数均可变($A_k, x_k$)，则可提高精度，即高斯求积。
+
+\subsection{Gauss型求积公式}
+\begin{equation}
+    \int^b_a\rho(x)f(x)dx \approx \sum^n_{k=0}A_kf(x_k)
+    \label{eq:4.2}
+\end{equation}
+
+\begin{definition}
+    如果一组节点$x_1, x_2, \dots, x_n \in [a,b]$能使求积公式\ref{eq:4.2}具有$2n-1$次代数精度，则称\ref{eq:4.2}为带权$\rho(x)$的Gauss型求积公式，其中
+    $x_1, x_2, \dots, x_n$称为Gauss点（n个节点）
+\end{definition}
+
+\begin{example}
+    试确定$A_1, A_2$和$x_1, x_2$使得下列求积公式$\int^1_{-1}f(x)dx\approx A_1f(x_1)+A_2f(x_2) $的代数精度尽可能高。
+    
+    解：选取$f(x)=1,x,x^2,x^3$则根据Gauss型求积公式定义可得
+    \begin{equation*}
+        \left\{
+            \begin{array}{lr}
+                A_1+A_2 = 2 = \int^1_{-1}1dx \\
+                A_1x_1 + A_2x_2 = 0 = \int^1_{-1}xdx \\
+                A_1x_1^2 + A_2x_2^2 = \frac{2}{3} = \int^1_{-1}x^2dx \\
+                A_1x_1^3 + A_2x_2^3 = 0 = \int^1_{-1}x^3dx
+            \end{array}
+            \right.
+    \end{equation*}
+
+    解得：$\left\{\begin{array}{lr}
+        x_1 = -\frac{1}{\sqrt{3}} \\
+        x_2 = \frac{1}{\sqrt{3}}
+    \end{array}\right. \left\{\begin{array}{lr}
+        A_1 = 1 \\
+        A_2 = 1
+    \end{array}\right.$ 
+
+    $\therefore \int^1_{-1}=f(x)dx \approx 1f(-\frac{1}{\sqrt{3}})+1f(\frac{1}{\sqrt{3}}) $
+
+    $\int^1_{-1}x^4dx = \frac{2}{5} \neq \frac{2}{9} \therefore$该公式精度达不到4，为3.
+\end{example}
+
+\begin{theorem}
+    求积公式\ref{eq:4.1}的节点是Gauss点的充要条件是函数$w_n(x)=\prod^n_{i=1}(x-x_i) $与任意次数不超过$n-1$的多项式$p(x)$在$[a,b]$上关于权$\rho(x)$正交.
+    i.e. 
+    $$
+    \int^b_ap(x)w_n(x)\rho(x)dx = 0
+    $$
+\end{theorem}
+
+\begin{proof}
+    \begin{itemize}
+        \item 必要性：对任何不超过$2n-1$次的多项式，\ref{eq:4.2}精确成立。$\forall p(x) \in H_{n-1}$，令$f(x)=p(x)w_{n}(x)\in H_{2n-1} $
+        \item 充分性：要证$x_k$为高斯点。$\forall f(x)\in H_{2n-1}, f(x) = p(x)w_n(x)+q(x) $，其中$p(x), q(x)\in H_{n-1}$，第一项为0，第二项积分$q(x)$满足插值求积公式，精确成立。
+    \end{itemize}
+\end{proof}
+
+Gauss型求积公式的构造过程：
+\begin{itemize}
+    \item 构造正交多项式得到高斯点。
+    \item 确定求积系数$A_k$，
+        可选取$l_k(x)=\prod^n_{\substack{i=1\\i\neq k}}\frac{x-x_i}{x_k-x_i} $（$n-1$次多项式）\\
+        $\therefore \int^b_a\rho(x)l_k(x)dx=\sum^n_{i=1}A_il_k(x_i)=A_k, (l_k(x_i)=0, i\neq k)$
+\end{itemize}
+
+Gauss型求积公式的误差：
+\begin{equation*}
+    \begin{split}
+        R(f)&=\int^b_a\rho(x)f(x)dx - \sum^n_{k=1}A_kf(x_k) \\
+        &= \frac{f^{(2n)}(\xi)}{(2n)!}\int^b_a\rho(x)w_n^2(x)dx, \xi \in (a,b)
+    \end{split}
+\end{equation*}
+
+可以证明n点的求积公式最多只能达到$2n-1$阶代数精度。
+
+下面给出集中特殊的高斯求积公式，即使用不同方法选取高斯点。
+
+\subsubsection{Gauss-Legendre求积公式}
+如果选取$[-1,1]$上Legendre正交多项式的零点作为Gauss点，即可得Gauss-Legendre求积公式$\int^1_{-1}f(x)dx\approx \sum^n_{k=1}A_kf(x_k) $
+\begin{align}
+    &A_k=\int^1_{-1}l_k(x)dx, k=1,2,\dots, n \\
+    &R(f) = \frac{1}{[(2n)!]^3}\frac{2^{2n+1}}{2n+1}(n!)^4f^{(2n)}(\eta), \eta \in (-1,1)
+\end{align}
+若不是$(-1,1)$区间，而是任意$(a,b)$区间，做积分变量的坐标变换后求解$x=\frac{1}{2}(a+b)+\frac{1}{2}(b-a)t, t\in(-1,1)$
+
+\subsubsection{Gauss-Chebyshev求积公式}
+如果以$\rho(x)=\frac{1}{\sqrt{1-x^2}},[-1,1]$上Chebyshev多项式的零点作为Gauss点，即可构造Gauss-Chebyshev求积公式：
+\begin{align*}
+    &\int^1_{-1}\frac{1}{\sqrt{1-x^2}}f(x)dx \approx \sum^n_{k=1}A_kf(x_k) \\
+    &A_k=\frac{\pi}{n} \\
+    &x_k=cos\frac{2k-1}{2n}\pi, k=1,2,\dots,n\\
+    &R(f) = \frac{\pi}{2^{n-1}(2n)!}f^{(2n)}(\eta), \eta \in(-1,1)
+\end{align*}
+
+\begin{example}
+    \textbf{重要！！}构造具有下列形式的Gauss型求积公式：
+    \begin{equation}
+        \int^1_0\sqrt{x}f(x)dx\approx A_1f(x_1) + A_2f(x_2)
+        \label{eq:ex}
+    \end{equation}
+    \begin{itemize}
+        \item 方法一：待定系数法：令$f(x)=1,x,x^2,x^3$分别代入\ref{eq:ex}使其精度成立即可确定$A_1, A_2, x_1,x_2$
+        \item 方法二：二次正交多项式构造\\
+            取：$\rho(x) = \sqrt{x}$，则构造二次正交多项式如下：$\phi_0(x)=1, \phi_1(x)=x-\frac{3}{5}$
+            $$\because \alpha_1 = \frac{(x\phi_0, \phi_0)}{(\phi_0, \phi_0)} = \frac{\int^1_0x^{3/2}dx}{\int^1_0x^{1/2}dx}=\frac{3}{5}$$
+            $$\phi_2(x) = (x-\alpha_2)\phi_1(x)- \beta_2\phi_0(x) = x^2-\frac{10}{9}x+\frac{5}{21}$$
+            $$\alpha_2 = \frac{(x\phi_1, \phi_1)}{(\phi_1, \phi_1)}=\frac{\int^1_0x^{3/2}(x-\frac{3}{5})^2dx}{\int^1_0x^{1/2}(x-\frac{3}{5})^2dx}=\frac{23}{45} $$
+            $$\beta_2 = \frac{(\phi_1, \phi_1)}{(\phi_0, \phi_0)}=\frac{\int^1_0x^{1/2}(x-\frac{3}{5})^2dx}{\int^1_0x^{1/2}dx}=\frac{12}{175}$$
+
+            令$\phi_2(x)=0$，则$x_1=0.821162, x_2=0.289949, A_1=\int^1_0\sqrt{x}l_1(x)dx = \int^1_0\sqrt{x}\frac{x-x_2}{x_1-x_2}\approx 0.38911$
+            $A_2=\int^1_0\sqrt{x}l_2(x)dx \approx 0.277556$
+            $$\therefore \int^1_0\sqrt{x}f(x)dx \approx 0.38911f(x_1)+0.277556f(x_2) $$
+        \item 方法三：取$\rho(x)=\sqrt{x}$，则构造二次正交多项式如下，选取$\phi_0=1, \phi_1(x)=x+a, \phi_2(x)=x^2+bx+c$，则利用正交性确定$\phi_1, \phi_2$,i.e.
+            $$
+            \left\{
+            \begin{array}{lr}
+                \int^1_0\sqrt{x}(x+a)dx=0 \\
+                \int^1_0\sqrt{x}(x^2+bx+c)dx=0 \\
+                \int^1_0\sqrt{x}(x+a)(x^2+bx+c)dx=0
+            \end{array}\right.
+            $$
+    \end{itemize}
+\end{example}
+
+\end{document}
