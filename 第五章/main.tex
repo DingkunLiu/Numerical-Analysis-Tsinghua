@@ -7,11 +7,12 @@
 \usepackage{booktabs}
 \usepackage{array}
 \usepackage{graphicx}
+\usepackage{hyperref}
 
 \newtheorem{definition}{定义}[section]
 \newtheorem{theorem}{定理}[section]
 \newtheorem{lemma}{引理}[section]
-\newtheorem{example}{例}[section]
+\newtheorem{example}{例}
 
 \makeatletter % `@' now normal "letter"
 \@addtoreset{equation}{section}
@@ -269,5 +270,102 @@ $$
         k_4 = f(x_n+h, y_n+hk_3)
     \end{array}\right.
 \end{equation}
+
+\section{单步法基本理论}
+\begin{definition}
+    对于所有初值问题(\ref{eq:diff})(假设f满足Lipschitz条件)的一种单步法：
+    \begin{equation}
+        y_{n+1}=y_n+h\phi(x_n,y_n,h)
+        \label{eq:3.1}
+    \end{equation}
+    产生的近似解，若对任意固定的$x_n=x_0+nh$，均有$\lim_{h\rightarrow 0}y_n=y(x_n) $则称方法\ref{eq:3.1}是收敛的。
+\end{definition}
+
+\begin{definition}
+    若方法\ref{eq:3.1}的增量函数$\phi$满足条件：
+    \begin{equation*}
+        \phi(x,y,0)=f(x,y)
+    \end{equation*}
+    则称方法\ref{eq:3.1}与初值问题\ref{eq:diff}相容。
+\end{definition}
+
+\paragraph{稳定性}
+以向前Euler方法\ref{eq:euler}为例，$y_{n+1}=y_n+hf(x_n,y_n) $假设$\bar{y}_n=y_n+\varepsilon_n$($\varepsilon_n$为计算误差)
+，记$\varepsilon_{n+1}=\bar{y}_{n+1}-y_{n+1} , \bar{y}_{n+1}=\bar{y}_n+hf(x_n, \bar{y}_n) $,
+上述两式相减得：
+\begin{equation*}
+    \begin{split}
+        \varepsilon_{n+1} &= \varepsilon_n +h[f(x_n, \bar{y}_n)-f(x_n,y_n)] \\
+        &= \varepsilon + h(f^{'}_y(x_n, \eta)(\bar{y_n}-y_n)) \\
+        &=[1+hf^{'}_y(x_n, \eta)]\varepsilon_n
+    \end{split}
+\end{equation*}
+$\therefore \ if. \ |1+hf^{'}_y(x_n, \eta)|\le 1 \Rightarrow |\varepsilon_{n+1} |\le \varepsilon_n$
+则此时向前Euler方法稳定，否则不稳定。\\
+由此可得，若$f^{'}_y>0 $，则称方程\ref{eq:diff}具有先天性不稳定性。
+
+将数值方法应用于如下试验方程：
+$$y^{'}=\lambda y $$
+在此种情况易证
+\begin{equation}
+    y_{n+1}=E(\lambda h)y_n 
+    \label{eq:*}
+\end{equation}
+
+\begin{definition}
+    如果\ref{eq:*}式中，$|E(\lambda h)|<1$，则称方法\ref{eq:3.1}是绝对稳定的，在复平面上复变量$\lambda h$满足$|E(\lambda h)|<1$的区域，称此方法\ref{eq:3.1}的绝对稳定性区域，它与实轴的交称为绝对稳定区间。
+\end{definition}
+
+\begin{example}
+    已知求解初值问题$y^{'}=f(x,y), y(x_0)=y_0$的显式单步法
+    $$y_{n+1}=y_n+\frac{1}{4}h[f(x_n,y_n)+3f(x_n+\frac{2}{3}h,y_n+\frac{2}{3}hf(x_n,y_n))] $$
+    \begin{enumerate}
+        \item 求其局部截断误差和精度阶数
+        \item 求其绝对稳定性区域和绝对稳定性区间
+    \end{enumerate}
+
+    \paragraph{解}$T_{n+1}=y(x_{n+1})-\widetilde{y}_{n+1} $
+    $$y(x_{n+1})=y(x_n+h)=y(x_n)+hy^{'}(x_n)+\frac{h^2}{2}y^{(2)}(x_n)+\frac{h^3}{6}y^{(3)}(x_n)+O(h^4) $$
+    而$y^{'}=f_x+f_yf, y^{{'}{'}}=f_{xx}+2ff_{xy}+f^2f_{yy}+f_y(f_x+ff_y) $\\
+    \begin{equation*}
+        \begin{split}
+            \widetilde{y}_{n+1}&=y(x_n) + \frac{h}{4}\{f+3[f+f_x\frac{2}{3}h+f_y\frac{2}{3}hf+\\
+            &\frac{1}{2}(f_{xx}(\frac{2}{3}h)^2+2f_{xy}\frac{2}{3}hf+f_{yy}(\frac{2}{3}hf)^2)]+O(h^3) \}
+        \end{split}
+    \end{equation*}
+    \begin{equation*}
+        \begin{split}
+            T_{n+1} &= y(x_{n+1})-\widetilde{y}_{n+1}\\
+            &=\frac{h^3}{6}f_y(x_n, y(x_n))[f_x(x_n,y(x_n))+f(x_n,y(x_n)f_y(x_n,y(x_n)))]+O(h^4)
+        \end{split}
+    \end{equation*}
+    所以精度为2阶
+
+    (2)将该方法应用于试验方程$y^{'}=\lambda y$得
+    \begin{equation*}
+        \begin{split}
+            y_{n+1}&=y_n+\frac{1}{4}h[\lambda y_n+3\lambda (y_n+\frac{2}{3}hf(x_n, y_n))] \\
+            &=[1+\lambda h+\frac{1}{2}(\lambda h)^2]y_n
+        \end{split}
+    \end{equation*}
+    $\therefore$绝对稳定性区域为$|1+\lambda h + \frac{1}{2}(\lambda h)^2|<1$\\
+    由上述不等式$\Rightarrow \lambda h(\frac{1}{2}\lambda h+1)<0 \Rightarrow \lambda h>-2 $\\
+    $\therefore $绝对稳定性区间为$(-2,0)$($\lambda$必须为负，否则方程具有先天性不稳定性。)
+\end{example}
+
+\begin{example}
+    将改进的Euler方法应用于求解初值问题$y^{'}=-20y, y(x_0)=y_0 $，试问步长h满足什么条件时才能得证该方法的绝对稳定性。
+    
+    \paragraph{解}$\because y_{n+1}=y_n+\frac{h}{2}[f(x_n, y_n)+f(x_n+h, y_n+hf(x_n,y_n))] $\\
+    将上述方法应用于$y^{'}=-20y$得：
+    $$
+    \begin{array}{lr}
+        y_{n+1}=y_n+\frac{h}{2}[-20y_n+-20(y_n+hf(x_n, y_n))]\\
+        =y_n+\frac{h}{2}[-20y_n-20(y_n-20hy_n)] \\
+        =[1-20h+\frac{1}{2}(20h)^2]y_n
+    \end{array}
+    $$
+    $\therefore E(\lambda h)=1-20h+\frac{1}{2}(20h)^2, \therefore |E(\lambda h)|<1 $得$h <0.1$
+\end{example}
 
 \end{document}
