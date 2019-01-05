@@ -207,7 +207,7 @@ $R^n$上所有范数是彼此等价的。
 \end{definition}
 易证：$|||A||-||B|||\le ||A-B||$（自证）
 
-F-范数：
+\paragraph{F-范数}
 $$||A||_F=[\sum^n_{i=1}\sum^n_{j=1}|a_{ij}|^2]^\frac{1}{2}$$
 性质4利用柯西不等式证明（和的平方$\le$平方的和）
 
@@ -574,7 +574,7 @@ $$|a_{kk}|>\sum^n_{j=1, j\neq k}|a_{kj}|, k=1,2,\dots, n$$
 
 \subsection{矩阵的LU分解}
 \begin{definition}[LU分解]
-$A=LU$，L为下三角矩阵，U为上三角矩阵 
+$A=LU$，L为单位下三角矩阵，U为上三角矩阵 
 \end{definition}
 $$Ax=b \Leftrightarrow LUx=b \Leftrightarrow 
 \left\{
@@ -970,7 +970,7 @@ $\therefore \frac{||\Delta x||}{||x||} \le ||A||\cdot||A^{-1}||\frac{||\Delta b|
 $Ax=b, (A+\Delta A)(x+\Delta x)=b\Rightarrow (A+\Delta A)\Delta x = -\Delta Ax\Rightarrow A(I+A^{-1}\Delta A)\Delta x = -\Delta Ax$
 
 当$||A^{-1}||\cdot||\Delta A||<1$时，由矩阵范数定理\ref{theorem_43}（$||(I\pm B)^{-1}||\le \frac{1}{1-||B||} (||B||<1)$），可知，$(I+A^{-1}\Delta A)^{-1}$存在
-$$\therefore \Delta x = -(I+A^{-1}\Delta A)^{-1}\Delta Ax $$
+$$\therefore \Delta x = -(I+A^{-1}\Delta A)^{-1}A^{-1}\Delta Ax $$
 $$\therefore ||\Delta x||\le ||(I+A^{-1}\Delta A)^{-1}||||A^{-1}||||\Delta A||||x||\le \frac{||A^{-1}||||\Delta A||}{1-||A^{-1}\Delta A||}||x|| $$
 $$\Rightarrow \frac{||\Delta x||}{||x||} \le \frac{||A||||A^{-1}||\cdot\frac{||\Delta A||}{||A||}}{1-||A||||A^{-1}||\frac{||\Delta A||}{||A||}} = \frac{cond(A)\frac{||\Delta A||}{||A||}}{1-cond(A)\frac{||\Delta A||}{||A||}}$$
 
@@ -1034,7 +1034,7 @@ $$cond(A)_2 = ||A||_2||A^{-1}||_2=\sqrt{\frac{\lambda_{max}(A^TA)}{\lambda_{min}
     \begin{split}
       \frac{1}{cond(A)}\frac{||r||}{||b||} &= \frac{||AA^{-1}r||}{||A||\cdot||A^{-1}||\cdot||b||} \\
       &\le \frac{||A||||A^{-1}r||}{||A||\cdot||A^{-1}||\cdot||b||} = \frac{||A^{-1}r||}{||A^{-1}||\cdot||b||} \\
-      &=\frac{||x-\bar{x}||}{||x||} \\
+      &\le \frac{||x-\bar{x}||}{||x||} \\
       &\le \frac{||A^{-1}||||r||||A||}{||A^{-1}b||||A||} \le cond(A)\frac{||r||}{||AA^{-1}b||} \\
       &= cond(A)\frac{||r||}{||b||}
     \end{split}
@@ -1538,13 +1538,12 @@ $(Ap^{(k)}, p^{(k-1)})=0$确定为：$\beta_{k-1}=-\frac{(r^{(k)}, Ap^{(k-1)})}{
 
 综上可得如下CG算法：
 给定：$x^{(0)},p^{(0)}=r^{(0)}, r^{(0)}=b-Ax^{(0)} $
-\begin{enumerate}
-  \item $$\alpha_k = \frac{(r^{(k)}, r^{(k)})}{(Ap^{(k)}, p^{(k)})}$$
-  \item $$x^{(k+1)}=x^{(k)}+\alpha_k p^{(k)} $$
-  \item $$r^{(k+1)}=r^{(k)}-\alpha_kAp^{(k)} $$
-  \item $$\beta_k = \frac{(r^{(k+1)}, r^{(k+1)})}{(r^{(k)}, r^{(k)})} $$
-  \item $$p^{(k+1)}=r^{(k+1)}+\beta_k p^{(k)} $$
-\end{enumerate}
-
+\begin{align}
+  &\alpha_k = \frac{(r^{(k)}, r^{(k)})}{(Ap^{(k)}, p^{(k)})} \\
+  &x^{(k+1)}=x^{(k)}+\alpha_k p^{(k)}  \\
+  &r^{(k+1)}=r^{(k)}-\alpha_kAp^{(k)}\\
+  &\beta_k = \frac{(r^{(k+1)}, r^{(k+1)})}{(r^{(k)}, r^{(k)})} \\
+  &p^{(k+1)}=r^{(k+1)}+\beta_k p^{(k)}
+\end{align}
 
 \end{document}
