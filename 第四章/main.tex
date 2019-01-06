@@ -18,6 +18,7 @@
 \renewcommand\theequation{\oldstylenums{\thesection}%
                    .\oldstylenums{\arabic{equation}}}
 
+\DeclareMathOperator{\spn}{span}
 
 \begin{document}
 \title{第四章\ 数值逼近与数值积分}
@@ -122,10 +123,10 @@ $$\int^1_{-1}\frac{P_k(x)T_n(x)}{\sqrt{1-x^2}}dx = 0, k < n$$
 \section{最小二乘拟合}
 
 \subsection{线性最小二乘拟合}
-已知一组数据$(x_i, f_i), i=0,1,\dots, m$，要求在函数类$\Phi = span\{\phi_0, \phi_1, \dots, \phi_n\}$中找到一个函数$S(x)$
+已知一组数据$(x_i, f_i), i=0,1,\dots, m$，要求在函数类$\Phi = \spn\{\phi_0, \phi_1, \dots, \phi_n\}$中找到一个函数$S(x)$
 使得
 \begin{equation}
-    \sum^m_{j=0}\rho(x_j)[S^*(x_j)-f_j]^2=min_{S(x)\in\Phi}\sum^m_{j=0}\rho(x_j)[S(x_j)-f_j]^2 
+    \sum^m_{j=0}\rho(x_j)[S^*(x_j)-f_j]^2=\min_{S(x)\in\Phi}\sum^m_{j=0}\rho(x_j)[S(x_j)-f_j]^2 
 \end{equation}
 其中$S(x)=a_0\phi_0(x)+\dots + a_n\phi_n(x)$，这就是线性最小二乘曲线拟合
 
@@ -166,7 +167,7 @@ $$G = \left[
 
 \subsection{非线性最小二乘拟合}
 \begin{example}
-    \textbf{重点}若已知$(x_i, f_i), i=0,1,\dots, m$，且其分布近似于指数曲线，则可考虑用指数函数$S=be^{ax}$去拟合数据。
+    \textbf{（重点）}若已知$(x_i, f_i), i=0,1,\dots, m$，且其分布近似于指数曲线，则可考虑用指数函数$S=be^{ax}$去拟合数据。
     
     为此，首先给出$F(a,b)=\sum^m_{i=0} (f_i-be^{ax_i})^2 $
     则可令$\frac{\partial F}{\partial a} = \frac{\partial F}{\partial b}=0, \Rightarrow \left\{
@@ -176,10 +177,10 @@ $$G = \left[
     \end{array}    
      \right. $
      
-     由 $S=be^{ax} $可得：$lnS(x)=lnb+ax $令:$z=lnS(x), \beta=lnb$则$z=\beta + ax$，选取$\Phi = span{1, x}, i.e. \phi_0(x)=1, \phi_1(x)=x$
+     由 $S=be^{ax} $可得：$lnS(x)=lnb+ax $令:$z=lnS(x), \beta=lnb$则$z=\beta + ax$，选取$\Phi = \spn\{1, x\}, i.e. \phi_0(x)=1, \phi_1(x)=x$
 
      已知 $x = \{1, 1.25, 1.5, 1.75, 2\}, f = \{5.1, 5.79, 6.53, 7.45, 8.46\}$，则$lnf =\{1.629, 1.756, 1.876, 2.008, 2.135\} $ 则
-     $(\phi_0, \phi_0) = 5, (\phi_0, \phi_1) = 7.5, (\phi_1, \phi_1) = 11.875, d_0 = (\phi_0, lnf) = 9.404, d_1=(\phi_1, lnf) = 14.422$
+     $(\phi_0, \phi_0) = 5, (\phi_0, \phi_1) = 7.5, (\phi_1, \phi_1) = 11.875, d_0 = (\phi_0, lnf) = 9.404, d_1=(\phi_1, lnf) = 14.424$
 
      则有如下法方程：
      $$\left[
@@ -189,16 +190,16 @@ $$G = \left[
          \end{matrix}
          \right]\left[
              \begin{matrix}
-                 \beta \\ \alpha 
+                 \beta \\ \alpha /
              \end{matrix}
              \right]=
              \left[
                  \begin{matrix}
-                     9.404 \\ 14.442
+                     9.404 \\ 14.424
                  \end{matrix}
                  \right]$$
     
-    得到：$\beta = 1.122, \alpha = 0.5056 \Rightarrow b = e^\beta \approx 3.07$，$\therefore S^*(x)=3.07e^{0.5056x} $
+    得到：$\beta = 1.1214, \alpha = 0.5064 \Rightarrow b = e^\beta \approx 3.069$，$\therefore S^*(x)=3.069e^{0.5064x} $
 \end{example}
 
 其他形式：$S(x) = \frac{1}{a_0+a_1x}$可转换为：$\frac{1}{S(x)} = a_0+a_1x$
@@ -219,7 +220,7 @@ $$G = \left[
 \end{definition}
 
 \subsection{Lagrange插值}
-在多项式函数空间$P_n=span\{1,x,\dots, x^n\}$中寻找某一插值函数$L_n(x) $满足下列插值条件：
+在多项式函数空间$P_n=\spn\{1,x,\dots, x^n\}$中寻找某一插值函数$L_n(x) $满足下列插值条件：
 \begin{equation}
     L_n(x_j)=f(x_j), i=0,1,\dots, n 
     \label{eq:*}
@@ -264,13 +265,13 @@ $P(x_j)=f(x_j),j=0,1,\dots, n $即可确定$a_j, j=0,1,\dots, n, i.e. a_0=P(x_0)
 \end{align*}
 由此可得Newton插值多项式：
 \begin{equation}
-    \rho(x) = f(x_0)+f[x_0,x_1](x-x_0) + \dots + f[x_0, x_1, dots, x_n](x-x_0)\cdots(x-x_{n-1})
+    \rho(x) = f(x_0)+f[x_0,x_1](x-x_0) + \dots + f[x_0, x_1, \dots, x_n](x-x_0)\cdots(x-x_{n-1})
 \end{equation}
 注：Newton法的优势在于若新增节点，只需要计算新增的一项。
 
 \begin{align*}
     R(x) = f(x)-P(x) \\
-    H_n = span\{\phi_0, \dots, \phi_n\}
+    H_n = \spn\{\phi_0, \dots, \phi_n\}
 \end{align*}
 
 \subsection{三次样条插值}
@@ -319,7 +320,7 @@ $S(x): [x_0, x_1][x_1,x_2],\dots, [x_{n-1},x_n] $共n段，共需确定4n个参�
 
 定积分$\int^b_a f(x)dx=F(b)-F(a) $若无法积分，积分无意义？或者只有离散数据，不知道表达式，则需要定积分：
 \begin{equation}
-    I(f) = \int^b_af(x)dx = \lim_{max(\Delta x)\rightarrow 0}\sum^n_{i=0}f(\xi_i)\Delta x_i
+    I(f) = \int^b_af(x)dx = \lim_{\max(\Delta x)\rightarrow 0}\sum^n_{i=0}f(\xi_i)\Delta x_i
 \end{equation}
 数值积分则为选取不同$\xi_i$，来使得$\sum^n_{i=0}f(\xi_i)\Delta_i \approx \int^b_af(x)dx $和真实积分之间误差尽可能小。
 i.e.$I(f)=\int^b_af(x)dx\approx \sum^n_{i=0}A_kf(x_k)$记为$I_n(f)$，其中$A_k$为求积系数，$x_k$为节点。（方法围绕如何选择$A_k, x_k$）
@@ -352,7 +353,7 @@ i.e.$I(f)=\int^b_af(x)dx\approx \sum^n_{i=0}A_kf(x_k)$记为$I_n(f)$，其中$A_
 \begin{definition}
     \textbf{重点概念！}如果$R_n(x^m)=0, (m=0,1,\dots, k)$，则称求积公式\ref{eq:4.1}至少具有k次代数精度，如果$\exists R(x^{k+1})\neq 0$则称\ref{eq:4.1}
     的代数精度恰为k，或若当$f(x)$为任意次数$\le k$的多项式，求积公式
-    $$\int^b_af(x)dx = \sum^n_{k=0}A_kf(x_k)$$精确成立，而对于某个$k+1$次多项式，公式不精确成立，则称求积公式洁颜油k次代数精度
+    $$\int^b_af(x)dx = \sum^n_{k=0}A_kf(x_k)$$精确成立，而对于某个$k+1$次多项式，公式不精确成立，则称求积公式具有k次代数精度
 \end{definition}
 
 注：\ref{eq:4.1}的代数精度至少为n，但最多只能到$n+1$（有n+1个节点，精度上限受限于节点已给定）如果节点和插值函数均可变($A_k, x_k$)，则可提高精度，即高斯求积。
@@ -429,7 +430,7 @@ Gauss型求积公式的误差：
 
 可以证明n点的求积公式最多只能达到$2n-1$阶代数精度。
 
-下面给出集中特殊的高斯求积公式，即使用不同方法选取高斯点。
+下面给出几种特殊的高斯求积公式，即使用不同方法选取高斯点。
 
 \subsubsection{Gauss-Legendre求积公式}
 如果选取$[-1,1]$上Legendre正交多项式的零点作为Gauss点，即可得Gauss-Legendre求积公式$\int^1_{-1}f(x)dx\approx \sum^n_{k=1}A_kf(x_k) $

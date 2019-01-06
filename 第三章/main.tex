@@ -307,7 +307,7 @@ F为$R^n$中子集D到$R^n$的映射。更一般的，$F:D\subset R^n\rightarrow
         \item $||x^{(k+1)}-x^* ||\le ||x^{(k)}-x^* ||,k=0,1,2,\dots$，i.e.$\{x^{(k)} \}$至少线性收敛
         \item 有误差估计式：
         \begin{equation}
-            ||x^{(k)}-x^* ||\le \frac{L^k}{1-L}||x{(1)}-x^{(0)} ||
+            ||x^{(k)}-x^* ||\le \frac{L^k}{1-L}||x^{(1)}-x^{(0)} ||
         \end{equation}
     \end{enumerate}
 \end{theorem}
@@ -331,7 +331,7 @@ F为$R^n$中子集D到$R^n$的映射。更一般的，$F:D\subset R^n\rightarrow
         $\because$D为闭集，且$x^{(k)}\in D, \forall k=0,1,2,\dots \therefore \{x^{(k)} \}$的极限$x^*\in D$
 
         假设还有另一个不动点$y^*\in D, x^*\neq y^*$，则$||x^*-y^*||=||\phi(x^*)-\phi(y^*) ||\le L||x^*-y^*||<||x^*-y^*||$，矛盾。
-        \item $||x^{(k+1)}-x^{(k)}||=||\phi(x^{(k)})-\phi(x^*) ||\le ||x^{(k)}-x^*||$，且$0<L<1$，至少线性收敛
+        \item $||x^{(k+1)}-x^*||=||\phi(x^{(k)})-\phi(x^*) ||\le L||x^{(k)}-x^*||$，且$0<L<1$，至少线性收敛
         \item $||x^{(k+m)}-x^{(k)}||\le \frac{L^k}{1-L}||x^{(1)}-x^{(0)}||$\\
             当$m\rightarrow\infty$时，$||x^{(k)}-x^*||\le \frac{L^k}{1-L}||x^{(1)}-x^{(0)}||$
     \end{enumerate}
@@ -436,14 +436,14 @@ $x_{k+1}=x_k-\frac{f(x)}{f^{'}(x)} $推广到方程组：
     $$\left\{
         \begin{array}{lr}
             x_1^2-10x_1+x_2^2+8=0\\
-            x_1x_2^2+x_1+10x_2+8=0
+            x_1x_2^2+x_1-10x_2+8=0
         \end{array}\right.
         $$
     
     解：
     $$F^{'}(x)=\left[\begin{matrix}
         2x_1-10 & 2x_2 \\
-        x_2^2+1 & 2x_1x_2+10
+        x_2^2+1 & 2x_1x_2-10
     \end{matrix}\right] $$
     取$x^{(0)}=(0, 0)^T $由$F^{'}(x^{(k)})\Delta x^{(0)}=-F(x^{(0)})\Rightarrow \Delta x^{(0)}=\left[\begin{matrix}
         0.8 \\ 0.88
@@ -456,8 +456,8 @@ $x_{k+1}=x_k-\frac{f(x)}{f^{'}(x)} $推广到方程组：
     \begin{enumerate}
         \item 存在闭球$\bar{S_r^{'}}=\{x|||x-x^*||\le r, r>0\}\subset S_0, \forall x^{(0)}\subset \bar{S_r^{'}} $，
             由$x^{(k+1)}=x^{(k)}-[F^{'}(x^{(k)})]^{-1}F(x^{(k)}) $产生的$x^{(k)}\in \bar{S_r^{'}}, k=0,1,2,\dots$(数学归纳法证明)
-        \item $\lim_{k\rightarrow\infty} x^{(k)}=x^*$(局部收敛性，$\rho(\phi^{'}(x^*)<1$或某种从属范数<1)
-        \item 若存在常数$k>0, s.t. ||F^{'}(x)-F^{'}(x^*) ||\le K||x-x^*||, \forall x \in \bar{S_r^{'}}$，则$\{x^{(k)} \}$至少平方收敛。($||x^{(k+1)}-x^{(k)}||\le C||x^{(k)}-x^*||^2$)
+        \item $\lim_{k\rightarrow\infty} x^{(k)}=x^*$(局部收敛性，$\rho(\phi^{'}(x^*))<1$或某种从属范数<1)
+        \item 若存在常数$k>0, s.t. ||F^{'}(x)-F^{'}(x^*) ||\le K||x-x^*||, \forall x \in \bar{S_r^{'}}$，则$\{x^{(k)} \}$至少平方收敛。($||x^{(k+1)}-x^*||\le C||x^{(k)}-x^*||^2$)
     \end{enumerate}
 \end{theorem}
 
