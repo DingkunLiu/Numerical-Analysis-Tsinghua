@@ -157,24 +157,18 @@ $\therefore$梯形公式的局部截断误差为$-\frac{h^3}{12}y^{{'}{'}{'}}(x_
 思考题：改进Euler方法的$T_{n+1}=?$主项为？阶？
 （多元函数求2阶导）
 
-\begin{proof}
+\paragraph{解：}
     \begin{equation*}
         \begin{split}
-            &y(x_{n+1})=y(x_n)+hf+\frac{h^2}{2}(f_x+ff_y)+ \\
-            &\quad \frac{h^3}{6}(f_{xx} + f_{xy}f + ff_{yx}+f^2f_{yy}+f_yf_x+f^2_yf) + O(h^4)
+            y(x_{n+1})&=y(x_n)+hf+\frac{h^2}{2}(f_x+ff_y)+ \\
+            & \frac{h^3}{6}(f_{xx} + f_{xy}f + ff_{yx}+f^2f_{yy}+f_yf_x+f^2_yf) + O(h^4) \\
+            \widetilde{y}_{n+1} &= y(x_n) + \frac{h}{2}f + \frac{h}{2}(f+ h(f_x+ff_y)+ \\
+            &\frac{h^2}{2}(f_{xx} + f_{xy}f + ff_{yx}+f^2f_{yy}) + O(h^3))\\
+            T_{n+1} &= y(x_{n+1}) - \widetilde{y} \\
+            &= -\frac{h^3}{12}(f_{xx} + 2f_{xy}f +f^2f_{yy}) + \frac{h^3}{6}(f_yf_x+f^2_yf) + O(h^4)
         \end{split}
     \end{equation*}
-    \begin{equation*}
-        \begin{split}
-            &\overline{y} = y(x_n) + \frac{h}{2}f + \frac{h}{2}(f+ h(f_x+ff_y) \\
-            &\quad \frac{h^2}{2}(f_{xx} + f_{xy}f + ff_{yx}+f^2f_{yy}+f_yf_x+f^2_yf) + O(h^3))
-        \end{split}
-    \end{equation*}
-    \begin{align*}
-        &y(x_{n+1}) - \overline{y} \\
-        =& -\frac{h^3}{12}(f_{xx} + f_{xy}f + ff_{yx}+f^2f_{yy}+f_yf_x+f^2_yf) + O(h^4)
-    \end{align*}
-\end{proof}
+
 
 \section{Runge-kutta方法}
 \subsection{R-K法基本思想}
@@ -226,13 +220,13 @@ $$
 构造麻烦的地方在于$y(x_n+b_{21}f(x_n, y(x_n))$无法写成y的形式，使用2元函数泰勒展开。
 \begin{equation*}
     \begin{split}
-        &y(x_{n+1})=[y+hy^{'}+\frac{h^2}{2}y^{{'}{'}}+\frac{h^3}{6}y^{{'}{'}{'}}+O(h^4)]|_{x=x_n}\\
-        =&y+hf+\frac{h^2}{2}(f_x+f_yf)+\frac{h^3}{6}() \\
-        &\overline{y}_{n+1} = y + h\{c_1f + c_2[f+a_2hf_x+hb_{21}ff_y]\} + O(h^3)
+        y(x_{n+1})&=[y+hy^{'}+\frac{h^2}{2}y^{{'}{'}}+\frac{h^3}{6}y^{{'}{'}{'}}+O(h^4)]|_{x=x_n}\\
+        &=y+hf+\frac{h^2}{2}(f_x+f_yf)+\frac{h^3}{6}() \\
+        \widetilde{y}_{n+1} &= y + h\{c_1f + c_2[f+a_2hf_x+hb_{21}ff_y]\} + O(h^3)
     \end{split}
 \end{equation*}
 
-将$y(x_{n+1})$与$\overline{y}_{n+1}$中前三项对应相等即可得：
+将$y(x_{n+1})$与$\widetilde{y}_{n+1}$中前三项对应相等即可得：
 $$
 \left\{
 \begin{array}{lr}
@@ -325,18 +319,14 @@ $$y^{'}=\lambda y $$
     \end{enumerate}
 
     \paragraph{解}$T_{n+1}=y(x_{n+1})-\widetilde{y}_{n+1} $
-    $$y(x_{n+1})=y(x_n+h)=y(x_n)+hy^{'}(x_n)+\frac{h^2}{2}y^{(2)}(x_n)+\frac{h^3}{6}y^{(3)}(x_n)+O(h^4) $$
-    而$y^{'}=f_x+f_yf, y^{{'}{'}}=f_{xx}+2ff_{xy}+f^2f_{yy}+f_y(f_x+ff_y) $\\
+    $$y(x_{n+1})=y(x_n+h)=y(x_n)+hy^{'}(x_n)+\frac{h^2}{2}y^{{'}{'}}(x_n)+\frac{h^3}{6}y^{{'}{'}{'}}(x_n)+O(h^4) $$
+    而$y^{{'}{'}}=f_x+f_yf, y^{{'}{'}{'}}=f_{xx}+2ff_{xy}+f^2f_{yy}+f_y(f_x+ff_y) $\\
     \begin{equation*}
         \begin{split}
             \widetilde{y}_{n+1}&=y(x_n) + \frac{h}{4}\{f+3[f+f_x\frac{2}{3}h+f_y\frac{2}{3}hf+\\
-            &\frac{1}{2}(f_{xx}(\frac{2}{3}h)^2+2f_{xy}\frac{2}{3}hf+f_{yy}(\frac{2}{3}hf)^2)]+O(h^3) \}
-        \end{split}
-    \end{equation*}
-    \begin{equation*}
-        \begin{split}
+            &\frac{1}{2}(f_{xx}(\frac{2}{3}h)^2+2f_{xy}(\frac{2}{3}h)^2f+f_{yy}(\frac{2}{3}hf)^2)]+O(h^3) \} \\
             T_{n+1} &= y(x_{n+1})-\widetilde{y}_{n+1}\\
-            &=\frac{h^3}{6}f_y(x_n, y(x_n))[f_x(x_n,y(x_n))+f(x_n,y(x_n)f_y(x_n,y(x_n)))]+O(h^4)
+            &=\frac{h^3}{6}f_y(f_x+ff_y) + O(h^4) 
         \end{split}
     \end{equation*}
     所以精度为2阶
