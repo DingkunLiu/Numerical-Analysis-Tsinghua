@@ -14,6 +14,7 @@
 \renewcommand\theequation{\oldstylenums{\thesection}%
                    .\oldstylenums{\arabic{equation}}}
 
+\DeclareMathOperator{\spn}{span}
 
 \usepackage{ctex}
 \usepackage{extarrows}
@@ -144,7 +145,7 @@ $$||\mathbf{x}||_2=\sqrt{(\mathbf{x},\mathbf{x})}=\sqrt{\sum^n_{i=1}x_i^2}$$
 
 几种常见范数：
 \begin{itemize}
-\item $||\mathbf{x}||_\infty = \max \limits_{1\le i \le n}|\mathbf{x}_i|$, $\infty$-范数
+\item $||\mathbf{x}||_\infty = \max \lim_{1\le i \le n}|\mathbf{x}_i|$, $\infty$-范数
 \item $||\mathbf{x}||_1=\sum^{n}_{i=1}|x_i|$，1-范数
 \item $||\mathbf{x}||_2=(\sum^n_{i=1}x_i^2)^\frac{1}{2}=\sqrt{(x,x)}$，2-范数
 \end{itemize}
@@ -296,8 +297,8 @@ $\therefore$$||A||_F$与$||x||_2$没有关系。
 \begin{itemize}
 \item $||A||_\infty = \max_{||x||_\infty = 1}||Ax||_\infty = \max_{1\le i \le n}\sum_{j=1}^{n}|a_{ij}|$ \hfill ($\infty$-范数 or 行范数)
 \item $||A||_1 = \max_{||x||_1=1}||Ax||_1=\max_{1 \le j \le n}\sum^n_{i=1}|a_{ij}|$ \hfill （1-范数 or 列范数）
-\item $||A||_2=\max_{||x||_2 = 1}||Ax||_2=\sqrt{\lambda_{max(A^TA)}}$ \hfill （2-范数 or 谱范数）\\
-其中，$\lambda_{max(A^TA)}=\rho(A^TA)$($\rho$表示谱半径)表示$A^TA$的最大特征值。\\
+\item $||A||_2=\max_{||x||_2 = 1}||Ax||_2=\sqrt{\lambda_{\max(A^TA)}}$ \hfill （2-范数 or 谱范数）\\
+其中，$\lambda_{\max(A^TA)}=\rho(A^TA)$($\rho$表示谱半径)表示$A^TA$的最大特征值。\\
 一般的，$\rho(A)=\max_{1 \le i \le n}|\lambda_i|$，$\lambda_i$为A的特征值。
 \end{itemize}
 \end{theorem}
@@ -306,8 +307,8 @@ $\therefore$$||A||_F$与$||x||_2$没有关系。
 \begin{itemize}
 \item 若$A=0$时，显然成立，不妨设$A \neq 0 $
 \\$\forall x \in R^n$，且$||x||_\infty = 1$，则：
-$$||Ax||_\infty = max_{1 \le i \le n}|\sum^n_{j=1}a_{ij}x_j| \le \max_i\sum^n_{j=1}|a_{ij}||x_j|\le \max_i\sum^n_{j=1}|a_{ij}|\xlongequal[]{\text{记}} \mu$$
-$\therefore max_{||x||_\infty=1}||Ax||_\infty \le \mu$\\
+$$||Ax||_\infty = \max_{1 \le i \le n}|\sum^n_{j=1}a_{ij}x_j| \le \max_i\sum^n_{j=1}|a_{ij}||x_j|\le \max_i\sum^n_{j=1}|a_{ij}|\xlongequal[]{\text{记}} \mu$$
+$\therefore \max_{||x||_\infty=1}||Ax||_\infty \le \mu$\\
 事实上，假设第$i_0$行使$\mu = \sum_{j=1}|a_{i_0j}|$成立，\\
 取$x^{(0)}=(x_1^{(0)}, x_2^{(0)}, x_3^{(0)}, \dots, x_n^{(0)})^T$，其中：
 $$ x_j^{(0)}=\left\{
@@ -338,7 +339,7 @@ $$\begin{array}{lr}
 特别地，若取$x=u_1$，则：\\
 $||Au_1||^2_2=(A^TAu_1, u_1)=\lambda_1$，$\therefore ||Au_1||_2=\sqrt{\lambda_1}$\\
 $\max_{||x||_2=1}||Ax||_2 \ge ||Au_1||_2 = \sqrt{\lambda_1}$\\
-$\therefore \max_{||x||_2=1}||Ax||_2 = \sqrt{\lambda_1} = \sqrt{\lambda_{max(A^TA)}}$
+$\therefore \max_{||x||_2=1}||Ax||_2 = \sqrt{\lambda_1} = \sqrt{\lambda_{\max(A^TA)}}$
 \end{itemize}
 \end{proof}
 
@@ -746,7 +747,7 @@ A = \left[
 $$
 对于L和U，由于$i<j$时，$l_{ij}=0$，当$i>j, u_{ij}=0$,$\therefore$由$A=LU$可得：
 \begin{equation}
-  a_{kj} = \sum^n_r=1l_{kr}u_{rj} = \sum_{r=1}^{min(k,j)}l_{kr}u_{kj}, k,j = 1,2,\dots, n
+  a_{kj} = \sum^n_r=1l_{kr}u_{rj} = \sum_{r=1}^{\min(k,j)}l_{kr}u_{kj}, k,j = 1,2,\dots, n
   \label{eq:4.1}
 \end{equation}
 显然：
@@ -980,7 +981,7 @@ $$\Rightarrow \frac{||\Delta x||}{||x||} \le \frac{||A||||A^{-1}||\cdot\frac{||\
 
 常用条件数：
 $$cond(A)_\infty =||A||_\infty\cdot||A^{-1}||_\infty $$
-$$cond(A)_2 = ||A||_2||A^{-1}||_2=\sqrt{\frac{\lambda_{max}(A^TA)}{\lambda_{min}(A^TA)}}$$
+$$cond(A)_2 = ||A||_2||A^{-1}||_2=\sqrt{\frac{\lambda_{\max}(A^TA)}{\lambda_{\min}(A^TA)}}$$
 特别地当：$A^T=A$时，$cond(A)_2=\frac{|\lambda_1|}{|\lambda_n|}$，其中$\lambda_1$和$\lambda_n$分别为A的绝对值最大和最小的特征值。
 
 条件数性质：（运用线性代数知识证明）
@@ -1439,7 +1440,7 @@ i.e.
       \end{array}
       \right.
   \end{equation*}
-  其中，$\rho(w_{opt})=min\rho(L_w)=w_{opt}-1, w_{opt}=\frac{2}{1+\sqrt{1-\mu^2}} $，称为最佳松弛因子，且当$0<2<w_{opt}$时，$\rho(L_w)$是w的单减函数，当$w_{opt}\le w\le 2$时，$\rho(L_w)$是w的单增函数。
+  其中，$\rho(w_{opt})=\min\rho(L_w)=w_{opt}-1, w_{opt}=\frac{2}{1+\sqrt{1-\mu^2}} $，称为最佳松弛因子，且当$0<2<w_{opt}$时，$\rho(L_w)$是w的单减函数，当$w_{opt}\le w\le 2$时，$\rho(L_w)$是w的单增函数。
 
 \end{theorem}
 
@@ -1494,7 +1495,7 @@ $$x^{(k+1)}=(D-wL)^{-1}[(1-w)D+wU]x^{(k)}+w(D-wL)^{-1}b $$
 的最小值点问题。
 
 \begin{theorem}
-  设A对称正定，则$x^*$为方程组的解的充要条件是$\phi(x^*)=min_{x\in R^n}\phi(x) $
+  设A对称正定，则$x^*$为方程组的解的充要条件是$\phi(x^*)=\min_{x\in R^n}\phi(x) $
 \end{theorem}
 \begin{proof}
   定义如下函数：
@@ -1529,7 +1530,7 @@ $x^{(k+1)} $，则需要进行一维搜索使$\phi(x^{(k)}+\alpha P^{(k)}) $极�
 \begin{equation*}
   \begin{array}{lr}
     \phi(x^{(k+1)})=\min_\alpha\phi(x^{(k)}+\alpha p^{(k)}) \\
-    \phi(x^{(k+1)}) = \min_{x\in Span\{p^{(0)}, p^{(1)}, \dots, p^{(k)} \}} \phi(x)
+    \phi(x^{(k+1)}) = \min_{x\in \spn\{p^{(0)}, p^{(1)}, \dots, p^{(k)} \}} \phi(x)
   \end{array}
 \end{equation*}
 
