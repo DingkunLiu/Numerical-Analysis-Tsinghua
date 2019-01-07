@@ -1522,7 +1522,7 @@ $r^{(1)}=b-Ax^{(1)},\alpha_1=\frac{(r^{(1)}, r^{(1)})}{(Ar^{(1)}, r^{(1)})} $，
 
 \subsection{共轭梯度法}
 对于$A>0$称满足$(AP^{(i)}, P^{(j)})=0, i\neq j$的向量组$\{P^{(i)}\}$为A共轭向量组，如果按方向$P^{(0)}, P^{(1)}, \dots, P^{(k-1)}$已进行了k次一维搜索，求得了$x^{(k)} $，下一步求
-$x^{(k+1)} $，则需要进行一维搜索使$\phi(x^{(k)}+\alpha P^{(k)}) $极小，则可令$\frac{d\phi(x^{(k)}+\alpha p^{(k)})}{d\alpha}=0 \Rightarrow \alpha_k = \frac{(r^{(k)}, r^{(k)})}{(Ap^{(k)}, p^{(k)})}$
+$x^{(k+1)} $，则需要进行一维搜索使$\phi(x^{(k)}+\alpha P^{(k)}) $极小，则可令$\frac{d\phi(x^{(k)}+\alpha p^{(k)})}{d\alpha}=0 \Rightarrow \alpha_k = \frac{(r^{(k)}, p^{(k)})}{(Ap^{(k)}, p^{(k)})}$
 
 由此可得：$x^{(k+1)}=x^{(k)}+\alpha_kp^{(k)}, r^{(k+1)}=b-Ax^{(k+1)}=r^{(k)}-\alpha_kAP^{(k)} $，其中$(AP^{(i)}, P^{(j)})=0, i\neq j, p^{(0)}=r^{(0)}=b-Ax^{(0)} $
 
