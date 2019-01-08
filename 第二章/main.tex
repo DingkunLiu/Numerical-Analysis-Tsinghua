@@ -422,7 +422,10 @@ $$
 \end{proof}
 
 \section{Gauss 消去法和矩阵的LU分解}
-设$Ax=b$\hfill (1)\\
+设
+\begin{equation}
+  Ax=b
+\end{equation}
 其中：
 $$A=\left[
 \begin{matrix}
@@ -667,13 +670,14 @@ A={\mathop L\limits^{\sim}}{\mathop U\limits^{\sim}}
 Gauss消去过程：
 $$
 A^{(k)}=\left[
-\begin{array}{c c c c c c}
+\begin{matrix}
 a^{(1)}_{11} & a^{(1)}_{12} & \dots & \dots &\dots &a^{(1)}_{1n} \\
-~ & a^{(2)}_{22} & \ddots & ~ & ~ & ~ \\
+~ & a^{(2)}_{22} & & & & \vdots\\
+& & \ddots & & & \vdots \\
 ~ & ~ & ~ & a^{(k)}_{kk} & \dots & a^{(k)}_{kn} \\
 ~ & ~ & ~ & \vdots        & \dots & \dots         \\
 ~ & ~ & ~ & a^{(k)}_{nk} & \dots & a^{(k)}_{nn} \\ 
-\end{array}\right]
+\end{matrix}\right]
 $$
 需要列主元的两种情况：
 \begin{itemize}
