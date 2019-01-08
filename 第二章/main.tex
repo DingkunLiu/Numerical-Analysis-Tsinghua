@@ -869,7 +869,7 @@ $\therefore$ 由$A=LU$即可确定：
   $0<|\frac{c_i}{u_i}|<1, i=1,2,\dots, n-1, |b_i|-|a_i|<|u_i|<|b_i|+|a_i|, i=2,3,\dots, n$
 \end{theorem}
 
-\subsection{Chelesky分解（平方根）法}
+\subsection{Cholesky分解（平方根）法}
 \textbf{对称}：$A^T = A$；\textbf{正定}：$\lambda_i > 0$，$D_i > 0$
 
 假设$det(A)\neq 0$，且$D_i\neq 0, i=1,2,\dots, n-1$
@@ -1116,7 +1116,7 @@ $$x^*=Bx^*+f $$
 \begin{proof}
   逐个证明：
 
-  (1)->(2)反证法：假设B有一个特征值$\lambda$满足$|\lambda|>\ge 1$，则有$\lambda \neq 0$使得$Bx=\lambda x\Rightarrow B^kx=\lambda B^{k-1}x=\lambda^kx,\therefore k->\infty,B^kx\neq 0 $
+  (1)->(2)反证法：假设B有一个特征值$\lambda$满足$|\lambda|\ge 1$，则有$\lambda \neq 0$使得$Bx=\lambda x\Rightarrow B^kx=\lambda B^{k-1}x=\lambda^kx,\therefore k->\infty,B^kx\neq 0 $
   根据$(\lim_{k\rightarrow \infty} A^{(k)}=0\Leftrightarrow \lim_{k\rightarrow \infty} A^{(k)}x=0, \forall x \in R^n )$得，$\lim_{k\rightarrow \infty} B^{k}\neq 0$与已知矛盾，$\therefore \rho(B)<1$
 
   (2)->(3)由定理\ref{theorem:rho}知，对$\forall \varepsilon >0, \exists ||\cdot|| s.t. ||B||\le \rho(B)+\varepsilon \Rightarrow ||B||<\rho(B)+2\varepsilon, \because \rho(B)<1, \text{choose\ } \varepsilon = \frac{1-\rho(B)}{2}>0
